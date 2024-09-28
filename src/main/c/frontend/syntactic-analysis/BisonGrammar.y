@@ -11,6 +11,7 @@
 	/** Terminals. */
 
 	int integer;
+	char * string;
 	Token token;
 
 	/** Non-terminals. */
@@ -19,6 +20,18 @@
 	Expression * expression;
 	Factor * factor;
 	Program * program;
+
+	Structure * structure;
+	InnerStructure * inner_structure;
+	Target * target;
+	Property * property;
+	Rule * rule;
+	// typedef struct { Property *property, Rule *rule } Style;
+	// "background(color)" => {"background", "color"}
+	// "$my-rule" => {"$", "my-rule"}
+	Style * style;
+	StyleVariable * style_variable;
+	Annotations * annotations;
 }
 
 /**
@@ -39,11 +52,24 @@
 /** Terminals. */
 %token <integer> INTEGER
 %token <token> ADD
-%token <token> CLOSE_PARENTHESIS
 %token <token> DIV
 %token <token> MUL
-%token <token> OPEN_PARENTHESIS
 %token <token> SUB
+
+%token <token> OPEN_PARENTHESIS
+%token <token> CLOSE_PARENTHESIS
+%token <token> OPEN_BRACES
+%token <token> CLOSE_BRACES
+%token <token> OPEN_BRACKETS
+%token <token> CLOSE_BRACKETS
+
+%token <token> COMMA
+%token <token> COLON
+%token <token> SEMICOLON
+%token <token> STYLE_VARIABLE
+
+%token <token> DEFAULT_ANNOTATION
+%token <token> CUSTOMIZE_ANNOTATION
 
 %token <token> UNKNOWN
 
@@ -52,6 +78,15 @@
 %type <expression> expression
 %type <factor> factor
 %type <program> program
+
+%type <structure> structure
+%type <inner_structure> inner_structure
+%type <target> target
+%type <property> property
+%type <rule> rule
+%type <style> style
+%type <style_variable> style_set_variable
+%type <annotations> annotations
 
 /**
  * Precedence and associativity.
@@ -80,6 +115,39 @@ factor: OPEN_PARENTHESIS expression CLOSE_PARENTHESIS				{ $$ = ExpressionFactor
 	;
 
 constant: INTEGER													{ $$ = IntegerConstantSemanticAction($1); }
+	;
+
+target: UNKNOWN														{ $$ = NULL; }
+	;
+
+property: UNKNOWN													{ $$ = NULL; }
+	;
+
+rule: UNKNOWN														{ $$ = NULL; }
+	;
+
+style: property[property] OPEN_PARENTHESIS rule[rule] CLOSE_PARENTHESIS		{ $$ = NULL; } // { $$ = StyleSemanticAction($property, $rule); }
+	| STYLE_VARIABLE														{ $$ = NULL; } // { $$ = StyleSemanticAction("$", $rule + 1); }
+	| style style															{ $$ = NULL; } // ?
+	;
+
+style_set_variable: style_set_variable STYLE_VARIABLE COLON style SEMICOLON			{ $$ = NULL; }
+	| %empty																		{ $$ = NULL; }
+	;
+
+annotations: DEFAULT_ANNOTATION OPEN_PARENTHESIS style[s] CLOSE_PARENTHESIS								{ $$ = NULL; } // { $$ = DefaultStyleSemanticAction($s); }
+	| CUSTOMIZE_ANNOTATION OPEN_PARENTHESIS target[t] COMMA style[s] CLOSE_PARENTHESIS					{ $$ = NULL; } // { $$ = CustomizeStyleSemanticAction(null, $t, $s); }
+	| annotations[a] CUSTOMIZE_ANNOTATION OPEN_PARENTHESIS target[t] COMMA style[s] CLOSE_PARENTHESIS 	{ $$ = NULL; } // { $$ = CustomizeStyleSemanticAction($a, $t, $s); }
+	;
+
+inner_structure: OPEN_BRACES inner_structure CLOSE_BRACES SEMICOLON	{ $$ = NULL; }
+	| OPEN_BRACKETS inner_structure CLOSE_BRACKETS SEMICOLON		{ $$ = NULL; }
+	| UNKNOWN												{ $$ = NULL; }
+	;
+
+structure: annotations OPEN_BRACES inner_structure CLOSE_BRACES SEMICOLON	{ $$ = NULL; }
+	| annotations OPEN_BRACKETS inner_structure CLOSE_BRACKETS SEMICOLON	{ $$ = NULL; }
+	| UNKNOWN														{ $$ = NULL; }
 	;
 
 %%
