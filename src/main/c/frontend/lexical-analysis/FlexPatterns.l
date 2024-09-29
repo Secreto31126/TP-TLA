@@ -75,6 +75,3 @@
 %%
 
 #include "FlexExport.h"
-
-@Default(background
-(red))
