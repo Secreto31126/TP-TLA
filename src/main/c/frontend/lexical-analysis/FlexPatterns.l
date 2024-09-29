@@ -32,6 +32,10 @@
 <MULTILINE_COMMENT>[^*]+			{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 <MULTILINE_COMMENT>.				{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 
+"\""								{ BEGIN(STRING); BeginStringLexemeAction(createLexicalAnalyzerContext()); }
+<STRING>"\""						{ EndStringLexemeAction(createLexicalAnalyzerContext()); BEGIN(INITIAL); }
+<STRING>[^"]*						{ return StringLexemeAction(createLexicalAnalyzerContext()); }
+
 "-"									{ return ArithmeticOperatorLexemeAction(createLexicalAnalyzerContext(), SUB); }
 "*"									{ return ArithmeticOperatorLexemeAction(createLexicalAnalyzerContext(), MUL); }
 "/"									{ return ArithmeticOperatorLexemeAction(createLexicalAnalyzerContext(), DIV); }
@@ -64,10 +68,6 @@
 ":"									{ return ColonLexemeAction(createLexicalAnalyzerContext()); }
 ";"									{ return SemiColonLexemeAction(createLexicalAnalyzerContext()); }
 "$"[[:alnum:]]+					    { return StyleVariableLexemeAction(createLexicalAnalyzerContext()); }
-
-"\""								{ BEGIN(STRING); BeginStringLexemeAction(createLexicalAnalyzerContext()); }
-<STRING>"\""						{ EndStringLexemeAction(createLexicalAnalyzerContext()); BEGIN(INITIAL); }
-<STRING>[^"]*						{ return StringLexemeAction(createLexicalAnalyzerContext()); }
 
 [[:space:]]+						{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 .									{ return UnknownLexemeAction(createLexicalAnalyzerContext()); }
