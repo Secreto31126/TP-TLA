@@ -10,31 +10,44 @@
 %union {
 	/** Terminals. */
 
-	int integer;
-	char * string;
+	char *string;
 	Token token;
 
 	/** Non-terminals. */
 
-	Constant * constant;
-	Expression * expression;
-	Factor * factor;
-	Program * program;
+	Program *program;
 
-	StructureType type;
-	Structure * structure;
-	InnerStructure * inner_structure;
-	Target * target;
-	Property * property;
-	Rule * rule;
-	// typedef struct { Style * list }
-	Styles * styles;
-	// typedef struct { Property *property, Rule *rule } Style;
+	// typedef struct { StyleVariable *variables, AnnotationList *annotations, StructureType *type, char order, Cells *cells } Structure;
+	Structure *structure;
+
+	// typedef struct { Token *name } StructureType;
+	StructureType *type;
+
+	// typedef struct { CellValue *value, char *label, Cells *next } CellValue;
+	Cells *cells;
+
+	// typedef { char type, union { char *value, Cells *cells } } CellValue;
+	// type == 'f' => char *value (final)
+	// type == 'o' => Cells *cells (ordered [])
+	// type == 'u' => Cells *cells (unordered {})
+	CellValue *cell_value;
+
+	// typedef struct AnnotationList { Annotation *head } AnnotationList;
+	AnnotationList *annotations;
+
+	// typedef struct Annotation { Target *target, Styles *style, Annotation *prev } Annotation;
+	// @Default(background(color)) => {null, {"background", "color"}, null}
+	// @Customize(target, background(color)) => {"target", {"background", "color"}, (Annotation * | null)}
+	Annotation *annotation;
+
+	// typedef struct Styles { Property *property, Rule *rule, Styles *next } Styles;
 	// "background(color)" => {"background", "color"}
 	// "$my-rule" => {"$", "my-rule"}
-	Style * style;
-	StyleVariable * style_variable;
-	Annotations * annotations;
+	Styles *styles;
+
+	// typedef struct StyleVariable { char *name, Styles *styles, StyleVariable *next } StyleVariable;
+	// Not to be confused with Styles that may contain a _reference_ to a StyleVariable _name_
+	StyleVariable *style_variable;
 }
 
 /**
@@ -53,13 +66,9 @@
 */
 
 /** Terminals. */
-%token <integer> INTEGER
-%token <token> ADD
-%token <token> DIV
-%token <token> MUL
-%token <token> SUB
-
 %token <string> STRING
+%token <string> LABEL
+%token <string> STYLE_VARIABLE
 
 %token <token> OPEN_PARENTHESIS
 %token <token> CLOSE_PARENTHESIS
@@ -71,8 +80,6 @@
 %token <token> COMMA
 %token <token> COLON
 %token <token> SEMICOLON
-%token <token> STYLE_VARIABLE
-%token <token> LABEL
 
 %token <token> DEFAULT_ANNOTATION
 %token <token> CUSTOMIZE_ANNOTATION
@@ -89,98 +96,38 @@
 %token <token> UNKNOWN
 
 /** Non-terminals. */
-%type <constant> constant
-%type <expression> expression
-%type <factor> factor
 %type <program> program
 
 %type <structure> structure
 %type <annotations> annotations
 %type <type> structure_type
 
-%type <target> target
-%type <property> property
-%type <rule> rule
 %type <styles> styles
-%type <style> style
-%type <style_variable> style_set_variable
+%type <style_variable> set_style_variable
+
+%type <annotation> default_annotation
+%type <annotation> customize_annotation
+
+%type <cell_value> cell_value
+%type <cells> cells
 
 /**
  * Precedence and associativity.
  *
  * @see https://www.gnu.org/software/bison/manual/html_node/Precedence.html
  */
-%left ADD SUB
-%left MUL DIV
+// %left ADD SUB
+// %left MUL DIV
 
 %%
 
 // IMPORTANT: To use λ in the following grammar, use the %empty symbol.
 
-program: expression													{ $$ = ExpressionProgramSemanticAction(currentCompilerState(), $1); }
+program: structure													{ $$ = NULL; } // { $$ = StructureProgramSemanticAction(currentCompilerState(), $1); }
 	;
 
-expression: expression[left] ADD expression[right]					{ $$ = ArithmeticExpressionSemanticAction($left, $right, ADDITION); }
-	| expression[left] DIV expression[right]						{ $$ = ArithmeticExpressionSemanticAction($left, $right, DIVISION); }
-	| expression[left] MUL expression[right]						{ $$ = ArithmeticExpressionSemanticAction($left, $right, MULTIPLICATION); }
-	| expression[left] SUB expression[right]						{ $$ = ArithmeticExpressionSemanticAction($left, $right, SUBTRACTION); }
-	| factor														{ $$ = FactorExpressionSemanticAction($1); }
-	;
-
-factor: OPEN_PARENTHESIS expression CLOSE_PARENTHESIS				{ $$ = ExpressionFactorSemanticAction($2); }
-	| constant														{ $$ = ConstantFactorSemanticAction($1); }
-	;
-
-constant: INTEGER													{ $$ = IntegerConstantSemanticAction($1); }
-	;
-
-target: UNKNOWN														{ $$ = NULL; }
-	;
-
-property: UNKNOWN													{ $$ = NULL; }
-	;
-
-rule: UNKNOWN														{ $$ = NULL; }
-	;
-
-style: property[property] OPEN_PARENTHESIS rule[rule] CLOSE_PARENTHESIS				{ $$ = NULL; } // { $$ = StyleSemanticAction($property, $rule, null); }
-	| STYLE_VARIABLE																{ $$ = NULL; } // { $$ = StyleSemanticAction("$", $rule + 1, null); }
-	| property[property] OPEN_PARENTHESIS rule[rule] CLOSE_PARENTHESIS style[next]	{ $$ = NULL; } // { $$ = StyleSemanticAction($property, $rule, $next); }
-	| STYLE_VARIABLE style[next]													{ $$ = NULL; } // { $$ = StyleSemanticAction("$", $rule + 1, $next); }
-	;
-
-styles: style[s]															{ $$ = NULL; }
-	;
-
-style_set_variable: STYLE_VARIABLE[name] COLON style[style] SEMICOLON style_set_variable[next]		{ $$ = NULL; } // { $$ = StyleVariableSemanticAction($name, $style, $next); }
-	| %empty																						{ $$ = NULL; }
-	;
-
-/* A -> @d ( S ) */
-annotations: DEFAULT_ANNOTATION OPEN_PARENTHESIS style[s] CLOSE_PARENTHESIS									{ $$ = NULL; } // { $$ = DefaultStyleSemanticAction($s); }
-	| CUSTOMIZE_ANNOTATION OPEN_PARENTHESIS target[t] COMMA style[s] CLOSE_PARENTHESIS						{ $$ = NULL; } // { $$ = CustomizeStyleSemanticAction($t, $s, null); }
-	| annotations[prev] CUSTOMIZE_ANNOTATION OPEN_PARENTHESIS target[t] COMMA style[s] CLOSE_PARENTHESIS 	{ $$ = NULL; } // { $$ = CustomizeStyleSemanticAction($t, $s, $prev); }
-	| %empty																								{ $$ = NULL; }
-	;
-
-/* 
-@Custom
-@Default
-@Custom
-@Custom
- */
-
-cell_value: STRING[value]								{ $$ = NULL; } // { $$ = CellValueSemanticAction($value); }
-	| OPEN_BRACES cells[cells] CLOSE_BRACES				{ $$ = NULL; } // { $$ = CellUnorderedSemanticAction($cells); }
-	| OPEN_BRACKETS cells[cells] CLOSE_BRACKETS			{ $$ = NULL; } // { $$ = CellOrderedValueSemanticAction($cells); }
-	;
-
-cells: cell_value[value]								{ $$ = NULL; } // { $$ = CellsSemanticAction($value, null, null); }
-	| cell_value[value] COMMA cells[next]				{ $$ = NULL; } // { $$ = CellsSemanticAction($value, null, $next); }
-	| LABEL[label] COLON cell_value						{ $$ = NULL; } // { $$ = CellsSemanticAction($value, $label, null); }
-	| LABEL[label] COLON cell_value COMMA cells[next]	{ $$ = NULL; } // { $$ = CellsSemanticAction($value, $label, $next); }
-	| LABEL[label]										{ $$ = NULL; } // { $$ = CellsSemanticAction(null, $label, null); }
-	| LABEL[label] COMMA cells[next]					{ $$ = NULL; } // { $$ = CellsSemanticAction(null, $label, $next); }
+structure: set_style_variable[v] annotations[a] structure_type[t] COLON OPEN_BRACES cells[cells] CLOSE_BRACES SEMICOLON		{ $$ = NULL; } // { $$ = StructureSemanticAction($t, $cells, $v, $a); }
+	| set_style_variable[v] annotations[a] structure_type[t] COLON OPEN_BRACKETS cells[cells] CLOSE_BRACKETS SEMICOLON		{ $$ = NULL; } // { $$ = StructureSemanticAction($t, $cells, $v, $a); }
 	;
 
 structure_type: ARRAY							{ $$ = NULL; } // { $$ = StructureTypeSemanticAction($1); }
@@ -193,34 +140,38 @@ structure_type: ARRAY							{ $$ = NULL; } // { $$ = StructureTypeSemanticAction
 	| TABLE										{ $$ = NULL; } // { $$ = StructureTypeSemanticAction($1); }
 	;
 
-structure: annotations[annotations] structure_type[type] COLON OPEN_BRACES cells[cells] CLOSE_BRACES SEMICOLON		{ $$ = NULL; } // { $$ = StructureSemanticAction($type, $cells, $annotations); }
-	| annotations[annotations] structure_type COLON OPEN_BRACKETS cells[cells] CLOSE_BRACKETS SEMICOLON				{ $$ = NULL; } // { $$ = StructureSemanticAction($type, $cells, $annotations); }
+cells: cell_value[value]								{ $$ = NULL; } // { $$ = CellsSemanticAction($value, null, null); }
+	| cell_value[value] COMMA cells[next]				{ $$ = NULL; } // { $$ = CellsSemanticAction($value, null, $next); }
+	| LABEL[label] COLON cell_value						{ $$ = NULL; } // { $$ = CellsSemanticAction($value, $label, null); }
+	| LABEL[label] COLON cell_value COMMA cells[next]	{ $$ = NULL; } // { $$ = CellsSemanticAction($value, $label, $next); }
+	| LABEL[label]										{ $$ = NULL; } // { $$ = CellsSemanticAction(null, $label, null); }
+	| LABEL[label] COMMA cells[next]					{ $$ = NULL; } // { $$ = CellsSemanticAction(null, $label, $next); }
 	;
 
-/* 
-inner_ordered_structure: f OPEN_BRACES inner_structure CLOSE_BRACES COMMA inner_ordered_structure		{ $$ = NULL; }
-	| f OPEN_BRACES inner_unordered_structure CLOSE_BRACES COMMA inner_unordered_structure							{ $$ = NULL; }
+cell_value: STRING[value]								{ $$ = NULL; } // { $$ = CellValueSemanticAction($value); }
+	| OPEN_BRACES cells[cells] CLOSE_BRACES				{ $$ = NULL; } // { $$ = CellUnorderedSemanticAction($cells); }
+	| OPEN_BRACKETS cells[cells] CLOSE_BRACKETS			{ $$ = NULL; } // { $$ = CellOrderedValueSemanticAction($cells); }
 	;
 
-ordered_structure: annotations OPEN_BRACES inner_structure CLOSE_BRACES SEMICOLON		{ $$ = NULL; } */
+annotations: default_annotation[a]					{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a, null); }
+	| customize_annotation[a]						{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a, null); }
+	| annotations[prev] customize_annotation[a] 	{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a, $prev); }
+	| %empty										{ $$ = NULL; }
 	;
 
-/* node: UNKNOWN
+/* A -> @d ( S ) */
+default_annotation: DEFAULT_ANNOTATION OPEN_PARENTHESIS styles[s] CLOSE_PARENTHESIS	{ $$ = NULL; } // { $$ = DefaultStyleSemanticAction($s) }
 
-inner_tree_structure: OPEN_BRACKETS f CLOSE_BRACKETS				{ $$ = NULL; }
-	| OPEN_BRACKETS f CLOSE_BRACKETS COMMA inner_tree_structure	{ $$ = NULL; }
+customize_annotation: CUSTOMIZE_ANNOTATION OPEN_PARENTHESIS LABEL[t] COMMA styles[s] CLOSE_PARENTHESIS	{ $$ = NULL; } // { $$ = AnnotationStyleSemanticAction($t, $s) }
+
+styles: LABEL[property] OPEN_PARENTHESIS LABEL[rule] CLOSE_PARENTHESIS				{ $$ = NULL; } // { $$ = StyleSemanticAction($property, $rule, null); }
+	| LABEL[property] OPEN_PARENTHESIS LABEL[rule] CLOSE_PARENTHESIS styles[next]	{ $$ = NULL; } // { $$ = StyleSemanticAction($property, $rule, $next); }
+	| STYLE_VARIABLE																{ $$ = NULL; } // { $$ = StyleSemanticAction("$", $rule + 1, null); }
+	| STYLE_VARIABLE styles[next]													{ $$ = NULL; } // { $$ = StyleSemanticAction("$", $rule + 1, $next); }
 	;
 
-tree_structure: annotations TREE OPEN_BRACES inner_tree_structure CLOSE_BRACES SEMICOLON		{ $$ = NULL; }
-	; */
-
-/* 
-inner_brackets_structure: OPEN_BRACKETS inner_structure CLOSE_BRACKETS		{ $$ = NULL; }
+set_style_variable: STYLE_VARIABLE[name] COLON styles[s] SEMICOLON set_style_variable[next]		{ $$ = NULL; } // { $$ = StyleVariableSemanticAction($name, $s, $next); }
+	| %empty																					{ $$ = NULL; }
 	;
-
-braces_structure: annotations DOUBLE_LINKED_LIST OPEN_BRACES inner_braces_structure CLOSE_BRACES SEMICOLON	{ $$ = NULL; }
-	;
-
-brackets_structure: annotations OPEN_BRACKETS inner_structure CLOSE_BRACKETS SEMICOLON	{ $$ = NULL; } */
 
 %%
