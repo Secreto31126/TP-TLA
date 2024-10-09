@@ -21,13 +21,27 @@ void shutdownFlexActionsModule();
  * Flex lexeme processing actions.
  */
 
-void BeginMultilineCommentLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
-void EndMultilineCommentLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
-void IgnoredLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+void BeginMultilineCommentLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
+void EndMultilineCommentLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
 
-Token IntegerLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
-Token ParenthesisLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext, Token token);
+void BeginStringLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
+void EndStringLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
+Token StringLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
 
-Token UnknownLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext);
+Token ParenthesisLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext, Token token);
+Token BracesLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext, Token token);
+Token BracketsLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext, Token token);
+
+Token CommaLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
+Token ColonLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
+Token SemiColonLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
+
+Token StructureTypeLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext, Token token);
+Token ModifierLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext, Token token);
+Token StyleVariableLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
+Token LabelLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
+
+void IgnoredLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
+Token UnknownLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
 
 #endif
