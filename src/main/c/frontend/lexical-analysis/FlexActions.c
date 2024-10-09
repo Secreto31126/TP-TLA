@@ -156,13 +156,15 @@ Token SemiColonLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext)
 	return SEMICOLON;
 }
 
-StyleVariableLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext){
+Token StyleVariableLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext)
+{
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
 	lexicalAnalyzerContext->semanticValue->token = STYLE_VARIABLE;
 	return STYLE_VARIABLE;
 }
 
-LabelLexemeAction(LexicalAnalyzerContext * lexicalAnalyzerContext){
+Token LabelLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext)
+{
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
 	lexicalAnalyzerContext->semanticValue->token = LABEL;
 	return LABEL;
