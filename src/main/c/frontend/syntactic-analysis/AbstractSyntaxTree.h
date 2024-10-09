@@ -62,6 +62,63 @@ struct Expression {
 	ExpressionType type;
 };
 
+typedef struct StyleVariable
+{
+	char *name;
+	Styles *styles;
+	StyleVariable *next;
+} StyleVariable;
+
+typedef struct Styles
+{
+	char *property;
+	char *rule;
+	Styles *next;
+} Styles;
+
+typedef struct Annotation
+{
+	char *target;
+	Styles *style;
+	Annotation *prev;
+} Annotation;
+
+typedef struct AnnotationList
+{
+	Annotation *head;
+} AnnotationList;
+
+typedef struct CellValue
+{
+	char type;
+	union
+	{
+		char *value;
+		struct Cells *cells;
+	};
+} CellValue;
+
+typedef struct Cells
+{
+	char *label;
+	CellValue *value;
+	struct Cells *next;
+} Cells;
+
+typedef struct StructureType
+{
+	Token *name;
+} StructureType;
+
+typedef struct Structure
+{
+	StyleVariable *variables;
+	AnnotationList *annotations;
+	StructureType *type;
+	char order;
+	Cells *cells;
+} Structure;
+
 struct Program {
 	Expression * expression;
 };
