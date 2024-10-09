@@ -17,35 +17,35 @@
 
 	Program *program;
 
-	// typedef struct { StyleVariable *variables, AnnotationList *annotations, StructureType *type, char order, Cells *cells } Structure;
+	// typedef struct Structure { StyleVariable *variables; AnnotationList *annotations; StructureType *type; char order; Cells *cells; } Structure;
 	Structure *structure;
 
-	// typedef struct { Token *name } StructureType;
+	// typedef struct StructureType { Token *name; } StructureType;
 	StructureType *type;
 
-	// typedef struct { CellValue *value, char *label, Cells *next } Cells;
+	// typedef struct { CellValue *value; char *label; Cells *next; } Cells;
 	Cells *cells;
 
-	// typedef { char type, union { char *value, Cells *cells } } CellValue;
+	// typedef { char type; union { char *value; Cells *cells; }; } CellValue;
 	// type == 'f' => char *value (final)
 	// type == 'o' => Cells *cells (ordered [])
 	// type == 'u' => Cells *cells (unordered {})
 	CellValue *cell_value;
 
-	// typedef struct AnnotationList { Annotation *head } AnnotationList;
+	// typedef struct AnnotationList { Annotation *head; } AnnotationList;
 	AnnotationList *annotations;
 
-	// typedef struct Annotation { Target *target, Styles *style, Annotation *prev } Annotation;
+	// typedef struct Annotation { char *target; Styles *style; Annotation *prev; } Annotation;
 	// @Default(background(color)) => {null, {"background", "color"}, null}
 	// @Customize(target, background(color)) => {"target", {"background", "color"}, (Annotation * | null)}
 	Annotation *annotation;
 
-	// typedef struct Styles { Property *property, Rule *rule, Styles *next } Styles;
+	// typedef struct Styles { char *property; char *rule; Styles *next; } Styles;
 	// "background(color)" => {"background", "color"}
 	// "$my-rule" => {"$", "my-rule"}
 	Styles *styles;
 
-	// typedef struct StyleVariable { char *name, Styles *styles, StyleVariable *next } StyleVariable;
+	// typedef struct StyleVariable { char *name; Styles *styles; StyleVariable *next; } StyleVariable;
 	// Not to be confused with Styles that may contain a _reference_ to a StyleVariable _name_
 	StyleVariable *style_variable;
 }
