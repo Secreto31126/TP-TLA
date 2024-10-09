@@ -126,8 +126,8 @@
 program: structure													{ $$ = NULL; } // { $$ = StructureProgramSemanticAction(currentCompilerState(), $1); }
 	;
 
-structure: set_style_variable[v] annotations[a] structure_type[t] COLON OPEN_BRACES cells[cells] CLOSE_BRACES SEMICOLON		{ $$ = NULL; } // { $$ = StructureSemanticAction($t, $cells, $v, $a); }
-	| set_style_variable[v] annotations[a] structure_type[t] COLON OPEN_BRACKETS cells[cells] CLOSE_BRACKETS SEMICOLON		{ $$ = NULL; } // { $$ = StructureSemanticAction($t, $cells, $v, $a); }
+structure: set_style_variable[v0] annotations[a0] structure_type[t0] COLON OPEN_BRACES cells[c0] CLOSE_BRACES SEMICOLON		{ $$ = NULL; } // { $$ = StructureSemanticAction($t0, $c0, $v0, $a0); }
+	| set_style_variable[v1] annotations[a1] structure_type[t1] COLON OPEN_BRACKETS cells[c1] CLOSE_BRACKETS SEMICOLON		{ $$ = NULL; } // { $$ = StructureSemanticAction($t1, $c1, $v1, $a1); }
 	;
 
 structure_type: ARRAY							{ $$ = NULL; } // { $$ = StructureTypeSemanticAction($1); }
@@ -140,37 +140,40 @@ structure_type: ARRAY							{ $$ = NULL; } // { $$ = StructureTypeSemanticAction
 	| TABLE										{ $$ = NULL; } // { $$ = StructureTypeSemanticAction($1); }
 	;
 
-cells: cell_value[value]								{ $$ = NULL; } // { $$ = CellsSemanticAction($value, null, null); }
-	| cell_value[value] COMMA cells[next]				{ $$ = NULL; } // { $$ = CellsSemanticAction($value, null, $next); }
-	| LABEL[label] COLON cell_value						{ $$ = NULL; } // { $$ = CellsSemanticAction($value, $label, null); }
-	| LABEL[label] COLON cell_value COMMA cells[next]	{ $$ = NULL; } // { $$ = CellsSemanticAction($value, $label, $next); }
-	| LABEL[label]										{ $$ = NULL; } // { $$ = CellsSemanticAction(null, $label, null); }
-	| LABEL[label] COMMA cells[next]					{ $$ = NULL; } // { $$ = CellsSemanticAction(null, $label, $next); }
+cells: cell_value[v0]										{ $$ = NULL; } // { $$ = CellsSemanticAction($v0, null, null); }
+	| cell_value[v1] COMMA cells[n1]						{ $$ = NULL; } // { $$ = CellsSemanticAction($v1, null, $n1); }
+	| LABEL[l2] COLON cell_value[v2]						{ $$ = NULL; } // { $$ = CellsSemanticAction($v2, $l2, null); }
+	| LABEL[l3] COLON cell_value[v3] COMMA cells[n3]		{ $$ = NULL; } // { $$ = CellsSemanticAction($v3, $l3, $n3); }
+	/* This 2 ugly guys below are because DirectedGraph contains labels to the nodes it targets */
+	| LABEL[l4]												{ $$ = NULL; } // { $$ = CellsSemanticAction(null, $l4, null); }
+	| LABEL[l5] COMMA cells[n5]								{ $$ = NULL; } // { $$ = CellsSemanticAction(null, $l5, $n5); }
 	;
 
-cell_value: STRING[value]								{ $$ = NULL; } // { $$ = CellValueSemanticAction($value); }
-	| OPEN_BRACES cells[cells] CLOSE_BRACES				{ $$ = NULL; } // { $$ = CellUnorderedSemanticAction($cells); }
-	| OPEN_BRACKETS cells[cells] CLOSE_BRACKETS			{ $$ = NULL; } // { $$ = CellOrderedValueSemanticAction($cells); }
+cell_value: STRING[v0]										{ $$ = NULL; } // { $$ = CellValueSemanticAction($v0); }
+	| OPEN_BRACES cells[c1] CLOSE_BRACES					{ $$ = NULL; } // { $$ = CellUnorderedSemanticAction($c1); }
+	| OPEN_BRACKETS cells[c2] CLOSE_BRACKETS				{ $$ = NULL; } // { $$ = CellOrderedValueSemanticAction($c2); }
 	;
 
-annotations: default_annotation[a]					{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a, null); }
-	| customize_annotation[a]						{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a, null); }
-	| annotations[prev] customize_annotation[a] 	{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a, $prev); }
+annotations: default_annotation[a0]					{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a0, null); }
+	| customize_annotation[a1]						{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a1, null); }
+	| annotations[p2] customize_annotation[a2] 		{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a2, $p2); }
 	| %empty										{ $$ = NULL; }
 	;
 
 /* A -> @d ( S ) */
-default_annotation: DEFAULT_ANNOTATION OPEN_PARENTHESIS styles[s] CLOSE_PARENTHESIS	{ $$ = NULL; } // { $$ = DefaultStyleSemanticAction($s) }
-
-customize_annotation: CUSTOMIZE_ANNOTATION OPEN_PARENTHESIS LABEL[t] COMMA styles[s] CLOSE_PARENTHESIS	{ $$ = NULL; } // { $$ = AnnotationStyleSemanticAction($t, $s) }
-
-styles: LABEL[property] OPEN_PARENTHESIS LABEL[rule] CLOSE_PARENTHESIS				{ $$ = NULL; } // { $$ = StyleSemanticAction($property, $rule, null); }
-	| LABEL[property] OPEN_PARENTHESIS LABEL[rule] CLOSE_PARENTHESIS styles[next]	{ $$ = NULL; } // { $$ = StyleSemanticAction($property, $rule, $next); }
-	| STYLE_VARIABLE																{ $$ = NULL; } // { $$ = StyleSemanticAction("$", $rule + 1, null); }
-	| STYLE_VARIABLE styles[next]													{ $$ = NULL; } // { $$ = StyleSemanticAction("$", $rule + 1, $next); }
+default_annotation: DEFAULT_ANNOTATION OPEN_PARENTHESIS styles[s0] CLOSE_PARENTHESIS	{ $$ = NULL; } // { $$ = DefaultStyleSemanticAction($s0) }
 	;
 
-set_style_variable: STYLE_VARIABLE[name] COLON styles[s] SEMICOLON set_style_variable[next]		{ $$ = NULL; } // { $$ = StyleVariableSemanticAction($name, $s, $next); }
+customize_annotation: CUSTOMIZE_ANNOTATION OPEN_PARENTHESIS LABEL[t0] COMMA styles[s0] CLOSE_PARENTHESIS	{ $$ = NULL; } // { $$ = AnnotationStyleSemanticAction($t0, $s0) }
+	;
+
+styles: LABEL[p0] OPEN_PARENTHESIS LABEL[r0] CLOSE_PARENTHESIS				{ $$ = NULL; } // { $$ = StyleSemanticAction($p0, $r0, null); }
+	| LABEL[p1] OPEN_PARENTHESIS LABEL[r1] CLOSE_PARENTHESIS styles[n1]		{ $$ = NULL; } // { $$ = StyleSemanticAction($p1, $r1, $n1); }
+	| STYLE_VARIABLE[v2]													{ $$ = NULL; } // { $$ = StyleSemanticAction("$", $v2 + 1, null); }
+	| STYLE_VARIABLE[v3] styles[n3]											{ $$ = NULL; } // { $$ = StyleSemanticAction("$", $v3 + 1, $n3); }
+	;
+
+set_style_variable: STYLE_VARIABLE[n0] COLON styles[s0] SEMICOLON set_style_variable[n0]		{ $$ = NULL; } // { $$ = StyleVariableSemanticAction($n0, $s0, $n0); }
 	| %empty																					{ $$ = NULL; }
 	;
 
