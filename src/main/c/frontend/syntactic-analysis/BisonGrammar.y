@@ -23,7 +23,7 @@
 	// typedef struct { Token *name } StructureType;
 	StructureType *type;
 
-	// typedef struct { CellValue *value, char *label, Cells *next } CellValue;
+	// typedef struct { CellValue *value, char *label, Cells *next } Cells;
 	Cells *cells;
 
 	// typedef { char type, union { char *value, Cells *cells } } CellValue;
