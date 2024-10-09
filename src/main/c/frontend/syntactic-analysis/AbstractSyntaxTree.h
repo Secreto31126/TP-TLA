@@ -65,22 +65,22 @@ struct Expression {
 typedef struct StyleVariable
 {
 	char *name;
-	Styles *styles;
-	StyleVariable *next;
+	struct Styles *styles;
+	struct StyleVariable *next;
 } StyleVariable;
 
 typedef struct Styles
 {
 	char *property;
 	char *rule;
-	Styles *next;
+	struct Styles *next;
 } Styles;
 
 typedef struct Annotation
 {
 	char *target;
 	Styles *style;
-	Annotation *prev;
+	struct Annotation *prev;
 } Annotation;
 
 typedef struct AnnotationList
