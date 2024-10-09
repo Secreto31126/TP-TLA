@@ -36,8 +36,8 @@
 <STRING>"\""						{ EndStringLexemeAction(createLexicalAnalyzerContext()); BEGIN(INITIAL); }
 <STRING>[^"]*						{ return StringLexemeAction(createLexicalAnalyzerContext()); }
 
-"//".*"\n"							{ return IgnoredLexemeAction(createLexicalAnalyzerContext()); }
-"#".*"\n"							{ return IgnoredLexemeAction(createLexicalAnalyzerContext()); }
+"//".*"\n"							{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
+"#".*"\n"							{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 
 "("									{ return ParenthesisLexemeAction(createLexicalAnalyzerContext(), OPEN_PARENTHESIS); }
 ")"									{ return ParenthesisLexemeAction(createLexicalAnalyzerContext(), CLOSE_PARENTHESIS); }
