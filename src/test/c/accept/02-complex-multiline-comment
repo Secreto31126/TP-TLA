@@ -1,0 +1,7 @@
+/**
+ * @example
+ * Array: [ Re ilegal esto, pero como es un comentario no me importa ];
+ */
+Array: [
+    "Hi"
+];
