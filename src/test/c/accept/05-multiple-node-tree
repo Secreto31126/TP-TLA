@@ -1,0 +1,16 @@
+//Tree with many nodes
+Tree:{
+    RED:[
+        "1",
+        BLACK:"2",
+        RED:[
+            RED:{
+                "3",
+                BLACK:[
+                    "4", RED:"5"
+                ],
+                RED: "7"
+            }
+        ]
+    ]
+};
