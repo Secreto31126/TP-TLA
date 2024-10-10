@@ -1,0 +1,4 @@
+@Default(border(double))
+Tree:[
+    A:"a"
+];

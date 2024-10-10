@@ -1,5 +1,5 @@
 /*this is a doubleLinkedList 
-with data inside
+with repeated label
 */
 DoubleLinkedList: [
     A: "Apellido: Jamaica",

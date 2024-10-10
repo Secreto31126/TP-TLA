@@ -1,0 +1,4 @@
+@Customize(A, border(double))
+Tree:[
+    "a"
+];
