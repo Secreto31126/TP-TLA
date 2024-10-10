@@ -156,7 +156,7 @@ cell_value: STRING[v0]										{ $$ = NULL; } // { $$ = CellValueSemanticAction
 
 annotations: default_annotation[a0]					{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a0, null); }
 	| customize_annotation[a1]						{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a1, null); }
-	| annotations[p2] customize_annotation[a2] 		{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a2, $p2); }
+	| customize_annotation[a2] annotations[p2] 		{ $$ = NULL; } // { $$ = AnnotationListSemanticAction($a2, $p2); }
 	| %empty										{ $$ = NULL; }
 	;
 
