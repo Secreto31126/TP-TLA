@@ -127,9 +127,9 @@ typedef struct Structure
 	Cells *cells;
 } Structure;
 
-	Expression * expression;
 struct Program
 {
+	Structure *structure;
 };
 
 /**

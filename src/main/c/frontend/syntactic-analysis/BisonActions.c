@@ -80,10 +80,26 @@ Factor *ExpressionFactorSemanticAction(Expression *expression)
 	return factor;
 }
 
-Program * ExpressionProgramSemanticAction(CompilerState * compilerState, Expression * expression) {
+// Program * ExpressionProgramSemanticAction(CompilerState * compilerState, Expression * expression) {
+// 	_logSyntacticAnalyzerAction(__FUNCTION__);
+// 	Program * program = calloc(1, sizeof(Program));
+// 	program->expression = expression;
+// 	compilerState->abstractSyntaxtTree = program;
+// 	if (0 < flexCurrentContext()) {
+// 		logError(_logger, "The final context is not the default (0): %d", flexCurrentContext());
+// 		compilerState->succeed = false;
+// 	}
+// 	else {
+// 		compilerState->succeed = true;
+// 	}
+// 	return program;
+// }
+
+Program *StructureProgramSemanticAction(CompilerState *compilerState, Structure *structure)
+{
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	program->expression = expression;
 	Program *program = calloc(1, sizeof(Program));
+	program->structure = structure;
 	compilerState->abstractSyntaxtTree = program;
 	if (0 < flexCurrentContext())
 	{

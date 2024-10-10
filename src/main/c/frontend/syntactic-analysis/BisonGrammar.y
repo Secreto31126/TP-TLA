@@ -123,7 +123,7 @@
 
 // IMPORTANT: To use λ in the following grammar, use the %empty symbol.
 
-program: structure													{ $$ = NULL; } // { $$ = StructureProgramSemanticAction(currentCompilerState(), $1); }
+program: structure													{ $$ = StructureProgramSemanticAction(currentCompilerState(), $1); }
 	;
 
 structure: set_style_variable[v0] annotations[a0] structure_type[t0] COLON OPEN_BRACES cells[c0] CLOSE_BRACES SEMICOLON		{ $$ = NULL; } // { $$ = StructureSemanticAction($t0, $c0, $v0, $a0); }
