@@ -35,65 +35,79 @@ static void _logSyntacticAnalyzerAction(const char *functionName)
 
 /* PUBLIC FUNCTIONS */
 
-Constant *IntegerConstantSemanticAction(const int value)
-{
+StructureType* StructureTypeSemanticAction(Token st){
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Constant *constant = calloc(1, sizeof(Constant));
-	constant->value = value;
-	return constant;
+	StructureType* structureType = calloc(1, sizeof(StructureType));
+	structureType->n=st;
+	return structureType;
 }
 
-Expression *ArithmeticExpressionSemanticAction(Expression *leftExpression, Expression *rightExpression, ExpressionType type)
-{
+Cells* CellsSemanticAction(CellValue* cv, char* l , Cells* c){
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Expression *expression = calloc(1, sizeof(Expression));
-	expression->leftExpression = leftExpression;
-	expression->rightExpression = rightExpression;
-	expression->type = type;
-	return expression;
+	Cells* cell = calloc(1, sizeof(Cells));
+	cell->value = cv;
+	cell->label = l;
+	cell->next = c;
+	return cell;
 }
 
-Expression *FactorExpressionSemanticAction(Factor *factor)
-{
+CellValue* CellValueSemanticAction(char* v){
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Expression *expression = calloc(1, sizeof(Expression));
-	expression->factor = factor;
-	expression->type = FACTOR;
-	return expression;
+	CellValue* cellValue = calloc(1, sizeof(CellValue));
+	cellValue->value=v;
+	cellValue->type='f';
+	return cellValue;
 }
 
-Factor *ConstantFactorSemanticAction(Constant *constant)
-{
+CellValue* CellUnorderedSemanticAction(Cells* c){
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Factor *factor = calloc(1, sizeof(Factor));
-	factor->constant = constant;
-	factor->type = CONSTANT;
-	return factor;
+	CellValue* cellValue = calloc(1, sizeof(CellValue));
+	cellValue->type='u';
+	cellValue->cells=c;
+	return cellValue;
 }
 
-Factor *ExpressionFactorSemanticAction(Expression *expression)
-{
+CellValue* CellOrderedValueSemanticAction(Cells* c){
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	Factor *factor = calloc(1, sizeof(Factor));
-	factor->expression = expression;
-	factor->type = EXPRESSION;
-	return factor;
+	CellValue* cellValue = calloc(1, sizeof(CellValue));
+	cellValue->type='o';
+	cellValue->cells=c;
+	return cellValue;
 }
 
-// Program * ExpressionProgramSemanticAction(CompilerState * compilerState, Expression * expression) {
-// 	_logSyntacticAnalyzerAction(__FUNCTION__);
-// 	Program * program = calloc(1, sizeof(Program));
-// 	program->expression = expression;
-// 	compilerState->abstractSyntaxtTree = program;
-// 	if (0 < flexCurrentContext()) {
-// 		logError(_logger, "The final context is not the default (0): %d", flexCurrentContext());
-// 		compilerState->succeed = false;
-// 	}
-// 	else {
-// 		compilerState->succeed = true;
-// 	}
-// 	return program;
-// }
+AnnotationList* AnnotationListSemanticAction(Annotation* a, AnnotationList* al){
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	AnnotationList* annotationList = calloc(1, sizeof(AnnotationList));
+	annotationList->value=a;
+	annotationList->next=al;
+	return annotationList;
+}
+
+Annotation* AnnotationStyleSemanticAction(char* t, Styles* s){
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	Annotation* annotation = calloc(1, sizeof(Annotation));
+	annotation->style=s;
+	annotation->target=t;
+	return annotation;
+}
+
+Styles* StylesSemanticAction(char* p, char* r, Styles* n){
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	Styles* style = calloc(1, sizeof(Styles));
+	style->property=p;
+	style->rule=r;
+	style->next=n;
+	return style;
+}
+
+StyleVariable* StyleVariableSemanticAction(char* name, Styles* s, StyleVariable* n){
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	StyleVariable* styleVar = calloc(1, sizeof(StyleVariable));
+	styleVar->name=name;
+	styleVar->styles=s;
+	styleVar->next=n;
+	return styleVar;
+}
 
 Program *StructureProgramSemanticAction(CompilerState *compilerState, Structure *structure)
 {

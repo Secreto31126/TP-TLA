@@ -88,12 +88,12 @@ typedef struct Annotation
 {
 	char *target;
 	Styles *style;
-	struct Annotation *prev;
 } Annotation;
 
 typedef struct AnnotationList
 {
-	Annotation *head;
+	Annotation *value;
+	struct AnnotationList *next;
 } AnnotationList;
 
 typedef struct CellValue
@@ -115,7 +115,7 @@ typedef struct Cells
 
 typedef struct StructureType
 {
-	Token *name;
+	int n;
 } StructureType;
 
 typedef struct Structure

@@ -17,12 +17,15 @@ void shutdownBisonActionsModule();
 /**
  * Bison semantic actions.
  */
-
-Constant *IntegerConstantSemanticAction(const int value);
-Expression *ArithmeticExpressionSemanticAction(Expression *leftExpression, Expression *rightExpression, ExpressionType type);
-Expression *FactorExpressionSemanticAction(Factor *factor);
-Factor *ConstantFactorSemanticAction(Constant *constant);
-Factor *ExpressionFactorSemanticAction(Expression *expression);
+StructureType* StructureTypeSemanticAction(Token st);
+Cells* CellsSemanticAction(CellValue* cv, char* l , Cells* c);
+CellValue* CellValueSemanticAction(char* v);
+CellValue* CellUnorderedSemanticAction(Cells* c);
+CellValue* CellOrderedValueSemanticAction(Cells* c);
+AnnotationList* AnnotationListSemanticAction(Annotation* a, AnnotationList* al);
+Annotation* AnnotationStyleSemanticAction(char* t, Styles* s);
+Styles* StylesSemanticAction(char* p, char* r, Styles* n);
+StyleVariable* StyleVariableSemanticAction(char* name, Styles* s, StyleVariable* n);
 Program *StructureProgramSemanticAction(CompilerState *compilerState, Structure *structure);
 
 #endif
