@@ -130,6 +130,7 @@ typedef struct Structure
 struct Program
 {
 	Structure *structure;
+	struct Program *program_next;
 };
 
 /**
