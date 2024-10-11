@@ -1,0 +1,7 @@
+//It is required that customize is before the default
+@Default(border(red))
+@Customize(A, border(double))
+Array:[
+    A:"elemento",
+    "cuarto"
+];
