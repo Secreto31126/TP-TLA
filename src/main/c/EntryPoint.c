@@ -40,7 +40,7 @@ const int main(const int count, const char **arguments)
 	if (syntacticAnalysisStatus == ACCEPT)
 	{
 		// TODO: Remove when starting to work with back
-		return 0;
+		goto SKIP_BACKEND;
 		// ----------------------------------------------------------------------------------------
 		// Beginning of the Backend... ------------------------------------------------------------
 		logDebugging(logger, "Computing expression value...");
@@ -58,6 +58,7 @@ const int main(const int count, const char **arguments)
 		}
 	// ...end of the Backend. -----------------------------------------------------------------
 	// ----------------------------------------------------------------------------------------
+	SKIP_BACKEND:
 		logDebugging(logger, "Releasing AST resources...");
 		releaseProgram(program);
 	}
