@@ -151,6 +151,13 @@ typedef struct Program
 /**
  * Node recursive destructors.
  */
+void releaseStyles(Styles *styles);
+void releaseStyleVariable(StyleVariable *styleVariable);
+void releaseAnnotation(Annotation *annotation);
+void releaseAnnotationList(AnnotationList *annotationList);
+void releaseCellValue(CellValue *cellValue);
+void releaseCells(Cells *cells);
+void releaseStructure(Structure *structure);
 void releaseProgram(Program *program);
 
 #endif

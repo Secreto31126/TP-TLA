@@ -77,8 +77,6 @@ void releaseAnnotationList(AnnotationList *annotationList)
 	free(annotationList);
 }
 
-void releaseCells(Cells *cell);
-
 void releaseCellValue(CellValue *cellValue)
 {
 	if (!cellValue)
