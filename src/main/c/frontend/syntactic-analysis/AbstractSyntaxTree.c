@@ -130,12 +130,12 @@ void releaseStructure(Structure *structure)
 
 void releaseProgram(Program *program)
 {
-	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-
 	if (!program)
 	{
 		return;
 	}
+
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 
 	releaseProgram(program->next);
 	releaseStructure(program->structure);
