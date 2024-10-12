@@ -13,14 +13,15 @@ STATUS=0
 echo "Compiler should accept..."
 echo ""
 
-for test in $(ls src/test/c/accept/); do
-	cat "src/test/c/accept/$test" | build/Compiler >/dev/null 2>&1
+accept_folder="src/test/c/accept/"
+for test in $(find "$accept_folder" -type f -not -path '*/.*'); do
+	cat "$test" | build/Compiler >/dev/null 2>&1
 	RESULT="$?"
 	if [ "$RESULT" == "0" ]; then
-		echo -e "    $test, ${GREEN}and it does${OFF} (status $RESULT)"
+		echo -e "    ${test#$accept_folder}, ${GREEN}and it does${OFF} (status $RESULT)"
 	else
 		STATUS=1
-		echo -e "    $test, ${RED}but it rejects${OFF} (status $RESULT)"
+		echo -e "    ${test#$accept_folder}, ${RED}but it rejects${OFF} (status $RESULT)"
 	fi
 done
 echo ""
@@ -28,14 +29,15 @@ echo ""
 echo "Compiler should reject..."
 echo ""
 
-for test in $(ls src/test/c/reject/); do
-	cat "src/test/c/reject/$test" | build/Compiler >/dev/null 2>&1
+reject_folder="src/test/c/reject/"
+for test in $(find "$reject_folder" -type f -not -path '*/.*'); do
+	cat "$test" | build/Compiler >/dev/null 2>&1
 	RESULT="$?"
 	if [ "$RESULT" != "0" ]; then
-		echo -e "    $test, ${GREEN}and it does${OFF} (status $RESULT)"
+		echo -e "    ${test#$reject_folder}, ${GREEN}and it does${OFF} (status $RESULT)"
 	else
 		STATUS=1
-		echo -e "    $test, ${RED}but it accepts${OFF} (status $RESULT)"
+		echo -e "    ${test#$reject_folder}, ${RED}but it accepts${OFF} (status $RESULT)"
 	fi
 done
 echo ""
