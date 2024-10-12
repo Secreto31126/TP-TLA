@@ -1,0 +1,6 @@
+$kebab-case: border(double);
+
+@Customize(A, $kebab-case)
+Array:[
+    A:"elemento"
+];

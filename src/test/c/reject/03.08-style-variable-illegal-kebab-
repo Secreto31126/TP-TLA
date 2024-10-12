@@ -1,0 +1,6 @@
+$illegal-kebab-: border(double);
+
+@Customize(A, $illegal-kebab-)
+Array:[
+    A:"elemento"
+];

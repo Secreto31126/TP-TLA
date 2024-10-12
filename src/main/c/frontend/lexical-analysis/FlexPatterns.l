@@ -63,7 +63,8 @@
 ","												{ return CommaLexemeAction(createLexicalAnalyzerContext()); }
 ":"												{ return ColonLexemeAction(createLexicalAnalyzerContext()); }
 ";"												{ return SemiColonLexemeAction(createLexicalAnalyzerContext()); }
-"$"[[:alpha:]][[:alnum:]]*		    { return StyleVariableLexemeAction(createLexicalAnalyzerContext()); }
+"$"[[:alpha:]]									{ return StyleVariableLexemeAction(createLexicalAnalyzerContext()); }
+"$"[[:alpha:]][[:alnum:]\-]*[[:alnum:]]			{ return StyleVariableLexemeAction(createLexicalAnalyzerContext()); }
 [[:alpha:]][[:alnum:]]* 						{ return LabelLexemeAction(createLexicalAnalyzerContext()); }
 
 [[:space:]]+									{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
