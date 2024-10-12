@@ -1,0 +1,3 @@
+// The website said `console.log 'Hello World'` was legal
+// In no world is that legal
+console.log('Hello World')
