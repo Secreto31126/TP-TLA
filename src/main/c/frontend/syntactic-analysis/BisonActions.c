@@ -158,7 +158,7 @@ StyleVariable *StyleVariableSemanticAction(char *name, Styles *s, StyleVariable 
 	return styleVar;
 }
 
-Structure *StructureSemanticAction(StructureType type, Cells *cells, StyleVariable *variables, AnnotationList *annotations)
+Structure *StructureSemanticAction(StructureType type, Cells *cells, StyleVariable *variables, AnnotationList *annotations, Structure *next)
 {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Structure *structure = calloc(1, sizeof(Structure));
@@ -166,27 +166,28 @@ Structure *StructureSemanticAction(StructureType type, Cells *cells, StyleVariab
 	structure->cells = cells;
 	structure->variables = variables;
 	structure->annotations = annotations;
+	structure->next = next;
 	return structure;
 }
 
-Program *StructureProgramSemanticAction(CompilerState *compilerState, Structure *structure, Program *next)
+Program *StructureProgramSemanticAction(CompilerState *compilerState, Structure *structure)
 {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
+
 	Program *program = calloc(1, sizeof(Program));
+
 	program->structure = structure;
-	program->next = next;
-	if (!next)
+	compilerState->abstractSyntaxtTree = program;
+
+	if (0 < flexCurrentContext())
 	{
-		compilerState->abstractSyntaxtTree = program;
-		if (0 < flexCurrentContext())
-		{
-			logError(_logger, "The final context is not the default (0): %d", flexCurrentContext());
-			compilerState->succeed = false;
-		}
-		else
-		{
-			compilerState->succeed = true;
-		}
+		logError(_logger, "The final context is not the default (0): %d", flexCurrentContext());
+		compilerState->succeed = false;
 	}
+	else
+	{
+		compilerState->succeed = true;
+	}
+
 	return program;
 }

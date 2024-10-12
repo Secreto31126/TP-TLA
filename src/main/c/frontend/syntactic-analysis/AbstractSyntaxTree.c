@@ -132,6 +132,7 @@ void releaseStructure(Structure *structure)
 
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 
+	releaseStructure(structure->next);
 	releaseStyleVariable(structure->variables);
 	releaseAnnotationList(structure->annotations);
 	releaseCells(structure->cells);
@@ -147,7 +148,6 @@ void releaseProgram(Program *program)
 
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 
-	releaseProgram(program->next);
 	releaseStructure(program->structure);
 	free(program);
 }
