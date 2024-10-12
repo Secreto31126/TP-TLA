@@ -20,7 +20,6 @@ typedef enum FactorType FactorType;
 typedef struct Constant Constant;
 typedef struct Expression Expression;
 typedef struct Factor Factor;
-typedef struct Program Program;
 
 /**
  * Node types for the Abstract Syntax Tree (AST).
@@ -143,11 +142,11 @@ typedef struct Structure
 	Cells *cells;
 } Structure;
 
-struct Program
+typedef struct Program
 {
 	Structure *structure;
 	struct Program *next;
-};
+} Program;
 
 /**
  * Node recursive destructors.
