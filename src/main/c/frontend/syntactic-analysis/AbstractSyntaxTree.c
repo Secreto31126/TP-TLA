@@ -29,8 +29,18 @@ void releaseStyles(Styles *styles)
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 
 	releaseStyles(styles->next);
-	free(styles->property);
-	free(styles->rule);
+
+	// This is unfortunate colateral damage from the Bison design.
+	if (*styles->property == '$')
+	{
+		free(styles->rule - 1);
+	}
+	else
+	{
+		free(styles->property);
+		free(styles->rule);
+	}
+
 	free(styles);
 }
 
