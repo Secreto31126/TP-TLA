@@ -1,0 +1,6 @@
+@Customize(A, B, C, border(double))
+Array:[
+    A:"elemento",
+    B:"otro elemento",
+    C:"otro elemento"
+];

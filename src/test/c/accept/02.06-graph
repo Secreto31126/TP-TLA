@@ -1,0 +1,10 @@
+Graph:{
+    A: {
+        "La letra A",
+        B,              
+        C: { "Content", A, B, C } 
+    },
+    B: {"La letra B", C, E },  
+    D: "Alone",
+    E: { "Algo", "Algo más", "Otra cosa más" }    
+};

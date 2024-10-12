@@ -1,0 +1,4 @@
+Graph: {
+    A: {"elemento1", B},
+    B: elemento2  
+};

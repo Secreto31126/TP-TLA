@@ -1,4 +1,4 @@
-//It is required that customize is before the default
+//It is required that customize is before default
 @Customize(A, border(double))
 @Customize(B, border(double))
 @Customize(C, border(double))

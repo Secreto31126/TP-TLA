@@ -1,0 +1,5 @@
+$style: border(double);
+@Customize(A, $style)
+Array:[
+    A:"elemento"
+];

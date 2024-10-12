@@ -1,0 +1,13 @@
+@Default(border(red))
+Array:[
+    A:"primero",
+    "otro elemento"
+];
+Array:[
+    "segundo"
+];
+Tree:[
+    "tercero",
+    "segundo del tercero",
+    "tercero del tercero"
+];
