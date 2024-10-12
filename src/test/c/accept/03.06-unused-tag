@@ -1,4 +1,3 @@
-@Customize(A, border(double))
-Array:[
-    "elemento"
+Array: [
+    A: "elemento"
 ];
