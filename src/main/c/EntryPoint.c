@@ -39,12 +39,12 @@ const int main(const int count, const char **arguments)
 	CompilationStatus compilationStatus = SUCCEED;
 	if (syntacticAnalysisStatus == ACCEPT)
 	{
-		// TODO: Remove when starting to work with back
-		goto SKIP_BACKEND;
 		// ----------------------------------------------------------------------------------------
 		// Beginning of the Backend... ------------------------------------------------------------
 		logDebugging(logger, "Computing expression value...");
 		Program *program = compilerState.abstractSyntaxtTree;
+		// TODO: Remove when starting to work with back
+		goto SKIP_BACKEND;
 		ComputationResult computationResult = computeExpression(program->structure);
 		if (computationResult.succeed)
 		{
