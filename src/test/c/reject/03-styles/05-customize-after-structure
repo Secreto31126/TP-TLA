@@ -1,0 +1,4 @@
+Array:[
+    "A"
+];
+@Customize(A,border(red))

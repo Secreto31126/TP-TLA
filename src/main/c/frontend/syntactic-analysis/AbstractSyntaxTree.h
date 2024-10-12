@@ -20,13 +20,13 @@ typedef enum FactorType FactorType;
 typedef struct Constant Constant;
 typedef struct Expression Expression;
 typedef struct Factor Factor;
-typedef struct Program Program;
 
 /**
  * Node types for the Abstract Syntax Tree (AST).
  */
 
-enum ExpressionType {
+enum ExpressionType
+{
 	ADDITION,
 	DIVISION,
 	FACTOR,
@@ -34,44 +34,130 @@ enum ExpressionType {
 	SUBTRACTION
 };
 
-enum FactorType {
+enum FactorType
+{
 	CONSTANT,
 	EXPRESSION
 };
 
-struct Constant {
+struct Constant
+{
 	int value;
 };
 
-struct Factor {
-	union {
-		Constant * constant;
-		Expression * expression;
+struct Factor
+{
+	union
+	{
+		Constant *constant;
+		Expression *expression;
 	};
 	FactorType type;
 };
 
-struct Expression {
-	union {
-		Factor * factor;
-		struct {
-			Expression * leftExpression;
-			Expression * rightExpression;
+struct Expression
+{
+	union
+	{
+		Factor *factor;
+		struct
+		{
+			Expression *leftExpression;
+			Expression *rightExpression;
 		};
 	};
 	ExpressionType type;
 };
 
-struct Program {
-	Expression * expression;
-};
+// TODO: Remove everything above after backend is created
+
+typedef enum CellType
+{
+	CELL_FINAL = 'f',
+	CELL_ORDERED = 'o',
+	CELL_UNORDERED = 'u'
+} CellType;
+
+typedef struct StyleVariable
+{
+	char *name;
+	struct Styles *styles;
+	struct StyleVariable *next;
+} StyleVariable;
+
+typedef struct Styles
+{
+	char *property;
+	char *rule;
+	struct Styles *next;
+} Styles;
+
+typedef struct Annotation
+{
+	char *target;
+	Styles *style;
+} Annotation;
+
+typedef struct AnnotationList
+{
+	Annotation *value;
+	struct AnnotationList *next;
+} AnnotationList;
+
+typedef struct CellValue
+{
+	CellType type;
+	union
+	{
+		char *value;
+		struct Cells *cells;
+	};
+} CellValue;
+
+typedef struct Cells
+{
+	char *label;
+	CellValue *value;
+	struct Cells *next;
+} Cells;
+
+typedef enum StructureType
+{
+	STRUCTURE_ARRAY = 0,
+	STRUCTURE_LIST,
+	STRUCTURE_LINKED_LIST,
+	STRUCTURE_DOUBLE_LINKED_LIST,
+	STRUCTURE_TREE,
+	STRUCTURE_GRAPH,
+	STRUCTURE_DIRECTED_GRAPH,
+	STRUCTURE_TABLE
+} StructureType;
+
+typedef struct Structure
+{
+	StyleVariable *variables;
+	AnnotationList *annotations;
+	StructureType type;
+	char order;
+	Cells *cells;
+} Structure;
+
+typedef struct Program
+{
+	Structure *structure;
+	struct Program *next;
+} Program;
 
 /**
  * Node recursive destructors.
  */
-void releaseConstant(Constant * constant);
-void releaseExpression(Expression * expression);
-void releaseFactor(Factor * factor);
-void releaseProgram(Program * program);
+void releaseStyles(Styles *styles);
+void releaseStyleVariable(StyleVariable *styleVariable);
+void releaseAnnotation(Annotation *annotation);
+void releaseAnnotationList(AnnotationList *annotationList);
+void releaseCellValue(CellValue *cellValue);
+void releaseCells(Cells *cells);
+void releaseStructure(Structure *structure);
+void releaseProgram(Program *program);
 
 #endif

@@ -1,0 +1,14 @@
+List:{
+    A:"{
+        ID: 1
+        desc: heladera
+    }",
+    B:"{
+        ID: 2
+        desc: lámpara
+    }",
+    "{
+        ID: 3
+        desc: computadora
+    }"
+};

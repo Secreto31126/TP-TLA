@@ -1,0 +1,5 @@
+@Default(border(red))
+@Default(border(double))
+Array:[
+    "A"
+];

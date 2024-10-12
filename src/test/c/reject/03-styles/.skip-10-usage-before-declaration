@@ -1,0 +1,12 @@
+//Will be fixed in back
+
+@Default($myRule)
+Array:[
+    "Hello"
+];
+
+$myRule: this(fails);
+
+Array:[
+    "Hello"
+];

@@ -2,65 +2,152 @@
 
 /* MODULE INTERNAL STATE */
 
-static Logger * _logger = NULL;
+static Logger *_logger = NULL;
 
-void initializeAbstractSyntaxTreeModule() {
+void initializeAbstractSyntaxTreeModule()
+{
 	_logger = createLogger("AbstractSyntxTree");
 }
 
-void shutdownAbstractSyntaxTreeModule() {
-	if (_logger != NULL) {
+void shutdownAbstractSyntaxTreeModule()
+{
+	if (_logger != NULL)
+	{
 		destroyLogger(_logger);
 	}
 }
 
 /** PUBLIC FUNCTIONS */
 
-void releaseConstant(Constant * constant) {
-	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-	if (constant != NULL) {
-		free(constant);
+void releaseStyles(Styles *styles)
+{
+	if (!styles)
+	{
+		return;
 	}
+
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+
+	releaseStyles(styles->next);
+
+	// This is unfortunate colateral damage from the Bison design.
+	if (*styles->property == '$')
+	{
+		free(styles->rule - 1);
+	}
+	else
+	{
+		free(styles->property);
+		free(styles->rule);
+	}
+
+	free(styles);
 }
 
-void releaseExpression(Expression * expression) {
-	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-	if (expression != NULL) {
-		switch (expression->type) {
-			case ADDITION:
-			case DIVISION:
-			case MULTIPLICATION:
-			case SUBTRACTION:
-				releaseExpression(expression->leftExpression);
-				releaseExpression(expression->rightExpression);
-				break;
-			case FACTOR:
-				releaseFactor(expression->factor);
-				break;
-		}
-		free(expression);
+void releaseStyleVariable(StyleVariable *styleVariable)
+{
+	if (!styleVariable)
+	{
+		return;
 	}
+
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+
+	releaseStyleVariable(styleVariable->next);
+	releaseStyles(styleVariable->styles);
+	free(styleVariable->name);
+	free(styleVariable);
 }
 
-void releaseFactor(Factor * factor) {
-	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-	if (factor != NULL) {
-		switch (factor->type) {
-			case CONSTANT:
-				releaseConstant(factor->constant);
-				break;
-			case EXPRESSION:
-				releaseExpression(factor->expression);
-				break;
-		}
-		free(factor);
+void releaseAnnotation(Annotation *annotation)
+{
+	if (!annotation)
+	{
+		return;
 	}
+
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+
+	releaseStyles(annotation->style);
+	free(annotation->target);
+	free(annotation);
 }
 
-void releaseProgram(Program * program) {
-	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-	if (program != NULL) {
-		releaseExpression(program->expression);
-		free(program);
+void releaseAnnotationList(AnnotationList *annotationList)
+{
+	if (!annotationList)
+	{
+		return;
 	}
+
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+
+	releaseAnnotationList(annotationList->next);
+	releaseAnnotation(annotationList->value);
+	free(annotationList);
+}
+
+void releaseCellValue(CellValue *cellValue)
+{
+	if (!cellValue)
+	{
+		return;
+	}
+
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+
+	if (cellValue->type == CELL_FINAL)
+	{
+		free(cellValue->value);
+	}
+	else
+	{
+		releaseCells(cellValue->cells);
+	}
+
+	free(cellValue);
+}
+
+void releaseCells(Cells *cells)
+{
+	if (!cells)
+	{
+		return;
+	}
+
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+
+	releaseCells(cells->next);
+	releaseCellValue(cells->value);
+	free(cells->label);
+	free(cells);
+}
+
+void releaseStructure(Structure *structure)
+{
+	if (!structure)
+	{
+		return;
+	}
+
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+
+	releaseStyleVariable(structure->variables);
+	releaseAnnotationList(structure->annotations);
+	releaseCells(structure->cells);
+	free(structure);
+}
+
+void releaseProgram(Program *program)
+{
+	if (!program)
+	{
+		return;
+	}
+
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+
+	releaseProgram(program->next);
+	releaseStructure(program->structure);
+	free(program);
 }

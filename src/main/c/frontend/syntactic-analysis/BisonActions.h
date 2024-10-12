@@ -17,12 +17,23 @@ void shutdownBisonActionsModule();
 /**
  * Bison semantic actions.
  */
-
-Constant * IntegerConstantSemanticAction(const int value);
-Expression * ArithmeticExpressionSemanticAction(Expression * leftExpression, Expression * rightExpression, ExpressionType type);
-Expression * FactorExpressionSemanticAction(Factor * factor);
-Factor * ConstantFactorSemanticAction(Constant * constant);
-Factor * ExpressionFactorSemanticAction(Expression * expression);
-Program * ExpressionProgramSemanticAction(CompilerState * compilerState, Expression * expression);
+StructureType StructureTypeArraySemanticAction();
+StructureType StructureTypeListSemanticAction();
+StructureType StructureTypeLinkedListSemanticAction();
+StructureType StructureTypeDoubleLinkedListSemanticAction();
+StructureType StructureTypeTreeSemanticAction();
+StructureType StructureTypeGraphSemanticAction();
+StructureType StructureTypeDirectedGraphSemanticAction();
+StructureType StructureTypeTableSemanticAction();
+Cells *CellsSemanticAction(CellValue *cv, char *l, Cells *c);
+CellValue *CellValueSemanticAction(char *v);
+CellValue *CellUnorderedSemanticAction(Cells *c);
+CellValue *CellOrderedValueSemanticAction(Cells *c);
+AnnotationList *AnnotationListSemanticAction(Annotation *a, AnnotationList *al);
+Annotation *AnnotationStyleSemanticAction(char *t, Styles *s);
+Styles *StylesSemanticAction(char *p, char *r, Styles *n);
+StyleVariable *StyleVariableSemanticAction(char *name, Styles *s, StyleVariable *n);
+Structure *StructureSemanticAction(StructureType type, Cells *cells, StyleVariable *variables, AnnotationList *annotations);
+Program *StructureProgramSemanticAction(CompilerState *compilerState, Structure *structure, Program *next);
 
 #endif

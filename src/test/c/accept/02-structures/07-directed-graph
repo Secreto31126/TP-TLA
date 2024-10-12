@@ -1,0 +1,13 @@
+// A apunta a B y C, y además tiene contenido.
+//B es otro tag.
+//C es nodo in place
+DirectedGraph: {
+    A: {
+        "La letra A",
+        B,              
+        C: { "Content", A, B, C } 
+    },
+    B: { A, "La letra B", C, E },  
+    D: "Alone",
+    E: { "Algo", "Algo más", "Otra cosa más" }    
+};

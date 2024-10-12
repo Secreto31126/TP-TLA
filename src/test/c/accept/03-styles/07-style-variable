@@ -1,0 +1,5 @@
+$style: border(double) color(red);
+@Default($style)
+Array:[
+    "elemento"
+];

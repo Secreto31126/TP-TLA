@@ -1,0 +1,16 @@
+/*this is a doubleLinkedList 
+with repeated label
+*/
+DoubleLinkedList: [
+    A: "Apellido: Jamaica",
+    B:[
+        "ID: 1", 
+        "desc: first_string",
+        "date: 12/10/2024"
+    ],
+    A:[
+        "ID: 2", 
+        "desc: second_string",
+        "date: 13/10/2024"
+    ]
+];
