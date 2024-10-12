@@ -136,9 +136,6 @@ struct Program
 /**
  * Node recursive destructors.
  */
-void releaseConstant(Constant *constant);
-void releaseExpression(Expression *expression);
-void releaseFactor(Factor *factor);
 void releaseProgram(Program *program);
 
 #endif
