@@ -1,0 +1,3 @@
+// Backend will check this
+@Default(this(fake))
+Array: ["Hello"];
