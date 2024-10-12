@@ -1,4 +1,4 @@
 @Default($myRule)
 Array: ["Hello"];
 
-$myRule: this(fails);
+$myRule: border(red);
