@@ -1,0 +1,4 @@
+@Default($myRule)
+Array: ["Hello"];
+
+$myRule: this(fails);
