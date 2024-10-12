@@ -100,7 +100,7 @@ void releaseCellValue(CellValue *cellValue)
 
 	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
 
-	if (cellValue->type == 'f')
+	if (cellValue->type == CELL_FINAL)
 	{
 		free(cellValue->value);
 	}

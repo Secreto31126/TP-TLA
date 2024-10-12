@@ -58,7 +58,7 @@ CellValue *CellValueSemanticAction(char *v)
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	CellValue *cellValue = calloc(1, sizeof(CellValue));
 	cellValue->value = v;
-	cellValue->type = 'f';
+	cellValue->type = CELL_FINAL;
 	return cellValue;
 }
 
@@ -66,7 +66,7 @@ CellValue *CellUnorderedSemanticAction(Cells *c)
 {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	CellValue *cellValue = calloc(1, sizeof(CellValue));
-	cellValue->type = 'u';
+	cellValue->type = CELL_UNORDERED;
 	cellValue->cells = c;
 	return cellValue;
 }
@@ -75,7 +75,7 @@ CellValue *CellOrderedValueSemanticAction(Cells *c)
 {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	CellValue *cellValue = calloc(1, sizeof(CellValue));
-	cellValue->type = 'o';
+	cellValue->type = CELL_ORDERED;
 	cellValue->cells = c;
 	return cellValue;
 }

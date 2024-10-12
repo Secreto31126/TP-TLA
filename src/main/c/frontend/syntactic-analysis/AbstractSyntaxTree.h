@@ -70,6 +70,15 @@ struct Expression
 	ExpressionType type;
 };
 
+// TODO: Remove everything above after backend is created
+
+typedef enum CellType
+{
+	CELL_FINAL = 'f',
+	CELL_ORDERED = 'o',
+	CELL_UNORDERED = 'u'
+} CellType;
+
 typedef struct StyleVariable
 {
 	char *name;
@@ -98,7 +107,7 @@ typedef struct AnnotationList
 
 typedef struct CellValue
 {
-	char type;
+	CellType type;
 	union
 	{
 		char *value;
