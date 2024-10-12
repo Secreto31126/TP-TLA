@@ -139,7 +139,7 @@ void releaseProgram(Program *program)
 		return;
 	}
 
-	releaseProgram(program->program_next);
+	releaseProgram(program->next);
 	releaseStructure(program->structure);
 	free(program);
 }

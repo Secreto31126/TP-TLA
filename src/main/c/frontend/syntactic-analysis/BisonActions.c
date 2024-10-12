@@ -163,7 +163,7 @@ Program *StructureProgramSemanticAction(CompilerState *compilerState, Structure 
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Program *program = calloc(1, sizeof(Program));
 	program->structure = structure;
-	program->program_next = next;
+	program->next = next;
 	if (!next)
 	{
 		compilerState->abstractSyntaxtTree = program;
