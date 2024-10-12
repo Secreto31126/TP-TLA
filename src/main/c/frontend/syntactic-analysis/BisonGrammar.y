@@ -12,6 +12,7 @@
 
 	char *string;
 	Token token;
+	StructureType type;
 
 	/** Non-terminals. */
 
@@ -19,9 +20,6 @@
 
 	// typedef struct Structure { StyleVariable *variables; AnnotationList *annotations; StructureType *type; char order; Cells *cells; } Structure;
 	Structure *structure;
-
-	// typedef struct StructureType { Token *name; } StructureType;
-	StructureType *type;
 
 	// typedef struct { CellValue *value; char *label; Cells *next; } Cells;
 	Cells *cells;
@@ -100,6 +98,7 @@
 
 %type <structure> structure
 %type <annotations> annotations
+/** This one _could_ be considered a terminal */
 %type <type> structure_type
 
 %type <styles> styles
@@ -131,14 +130,14 @@ structure: set_style_variable[v0] annotations[a0] structure_type[t0] COLON OPEN_
 	| set_style_variable[v1] annotations[a1] structure_type[t1] COLON OPEN_BRACKETS cells[c1] CLOSE_BRACKETS SEMICOLON		{ $$ = NULL; } // { $$ = StructureSemanticAction($t1, $c1, $v1, $a1); }
 	;
 
-structure_type: ARRAY							{ $$ = StructureTypeSemanticAction($1); }
-	| LIST										{ $$ = StructureTypeSemanticAction($1); }
-	| LINKED_LIST								{ $$ = StructureTypeSemanticAction($1); }
-	| DOUBLE_LINKED_LIST						{ $$ = StructureTypeSemanticAction($1); }
-	| TREE										{ $$ = StructureTypeSemanticAction($1); }
-	| GRAPH										{ $$ = StructureTypeSemanticAction($1); }
-	| DIRECTED_GRAPH							{ $$ = StructureTypeSemanticAction($1); }
-	| TABLE										{ $$ = StructureTypeSemanticAction($1); }
+structure_type: ARRAY							{ $$ = StructureTypeArraySemanticAction(); }
+	| LIST										{ $$ = StructureTypeListSemanticAction(); }
+	| LINKED_LIST								{ $$ = StructureTypeLinkedListSemanticAction(); }
+	| DOUBLE_LINKED_LIST						{ $$ = StructureTypeDoubleLinkedListSemanticAction(); }
+	| TREE										{ $$ = StructureTypeTreeSemanticAction(); }
+	| GRAPH										{ $$ = StructureTypeGraphSemanticAction(); }
+	| DIRECTED_GRAPH							{ $$ = StructureTypeDirectedGraphSemanticAction(); }
+	| TABLE										{ $$ = StructureTypeTableSemanticAction(); }
 	;
 
 cells: cell_value[v0]										{ $$ = CellsSemanticAction($v0, NULL, NULL); }

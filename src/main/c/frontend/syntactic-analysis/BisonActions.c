@@ -35,12 +35,52 @@ static void _logSyntacticAnalyzerAction(const char *functionName)
 
 /* PUBLIC FUNCTIONS */
 
-StructureType *StructureTypeSemanticAction(Token st)
+StructureType StructureTypeArraySemanticAction()
 {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
-	StructureType *structureType = calloc(1, sizeof(StructureType));
-	structureType->n = st;
-	return structureType;
+	return STRUCTURE_ARRAY;
+}
+
+StructureType StructureTypeListSemanticAction()
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return STRUCTURE_LIST;
+}
+
+StructureType StructureTypeLinkedListSemanticAction()
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return STRUCTURE_LINKED_LIST;
+}
+
+StructureType StructureTypeDoubleLinkedListSemanticAction()
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return STRUCTURE_DOUBLE_LINKED_LIST;
+}
+
+StructureType StructureTypeTreeSemanticAction()
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return STRUCTURE_TREE;
+}
+
+StructureType StructureTypeGraphSemanticAction()
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return STRUCTURE_GRAPH;
+}
+
+StructureType StructureTypeDirectedGraphSemanticAction()
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return STRUCTURE_DIRECTED_GRAPH;
+}
+
+StructureType StructureTypeTableSemanticAction()
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return STRUCTURE_TABLE;
 }
 
 Cells *CellsSemanticAction(CellValue *cv, char *l, Cells *c)

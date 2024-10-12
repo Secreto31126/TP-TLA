@@ -17,7 +17,14 @@ void shutdownBisonActionsModule();
 /**
  * Bison semantic actions.
  */
-StructureType *StructureTypeSemanticAction(Token st);
+StructureType StructureTypeArraySemanticAction();
+StructureType StructureTypeListSemanticAction();
+StructureType StructureTypeLinkedListSemanticAction();
+StructureType StructureTypeDoubleLinkedListSemanticAction();
+StructureType StructureTypeTreeSemanticAction();
+StructureType StructureTypeGraphSemanticAction();
+StructureType StructureTypeDirectedGraphSemanticAction();
+StructureType StructureTypeTableSemanticAction();
 Cells *CellsSemanticAction(CellValue *cv, char *l, Cells *c);
 CellValue *CellValueSemanticAction(char *v);
 CellValue *CellUnorderedSemanticAction(Cells *c);

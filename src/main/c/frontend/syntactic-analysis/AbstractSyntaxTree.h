@@ -122,16 +122,23 @@ typedef struct Cells
 	struct Cells *next;
 } Cells;
 
-typedef struct StructureType
+typedef enum StructureType
 {
-	int n;
+	STRUCTURE_ARRAY = 0,
+	STRUCTURE_LIST,
+	STRUCTURE_LINKED_LIST,
+	STRUCTURE_DOUBLE_LINKED_LIST,
+	STRUCTURE_TREE,
+	STRUCTURE_GRAPH,
+	STRUCTURE_DIRECTED_GRAPH,
+	STRUCTURE_TABLE
 } StructureType;
 
 typedef struct Structure
 {
 	StyleVariable *variables;
 	AnnotationList *annotations;
-	StructureType *type;
+	StructureType type;
 	char order;
 	Cells *cells;
 } Structure;

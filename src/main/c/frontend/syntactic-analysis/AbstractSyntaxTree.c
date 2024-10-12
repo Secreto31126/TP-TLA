@@ -77,18 +77,6 @@ void releaseAnnotationList(AnnotationList *annotationList)
 	free(annotationList);
 }
 
-void releaseStructureType(StructureType *structureType)
-{
-	if (!structureType)
-	{
-		return;
-	}
-
-	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
-
-	free(structureType);
-}
-
 void releaseCells(Cells *cell);
 
 void releaseCellValue(CellValue *cellValue)
@@ -138,7 +126,6 @@ void releaseStructure(Structure *structure)
 
 	releaseStyleVariable(structure->variables);
 	releaseAnnotationList(structure->annotations);
-	releaseStructureType(structure->type);
 	releaseCells(structure->cells);
 	free(structure);
 }
