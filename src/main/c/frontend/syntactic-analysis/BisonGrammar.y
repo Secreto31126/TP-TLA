@@ -122,12 +122,12 @@
 
 // IMPORTANT: To use λ in the following grammar, use the %empty symbol.
 
-program: structure								{ $$ = StructureProgramSemanticAction(currentCompilerState(), $1, NULL); }
-	| structure program							{ $$ = StructureProgramSemanticAction(currentCompilerState(), $1, $2); }
+program: structure							{ $$ = StructureProgramSemanticAction(currentCompilerState(), $1); }
 	;
 
-structure: set_style_variable[v0] annotations[a0] structure_type[t0] COLON OPEN_BRACES cells[c0] CLOSE_BRACES SEMICOLON		{ $$ = StructureSemanticAction($t0, $c0, $v0, $a0); }
-	| set_style_variable[v1] annotations[a1] structure_type[t1] COLON OPEN_BRACKETS cells[c1] CLOSE_BRACKETS SEMICOLON		{ $$ = StructureSemanticAction($t1, $c1, $v1, $a1); }
+structure: set_style_variable[v0] annotations[a0] structure_type[t0] COLON OPEN_BRACES cells[c0] CLOSE_BRACES SEMICOLON structure[n0]		{ $$ = StructureSemanticAction($t0, $c0, $v0, $a0, $n0); }
+	| set_style_variable[v1] annotations[a1] structure_type[t1] COLON OPEN_BRACKETS cells[c1] CLOSE_BRACKETS SEMICOLON structure[n1]		{ $$ = StructureSemanticAction($t1, $c1, $v1, $a1, $n1); }
+	| %empty																																{ $$ = NULL; }
 	;
 
 structure_type: ARRAY							{ $$ = StructureTypeArraySemanticAction(); }

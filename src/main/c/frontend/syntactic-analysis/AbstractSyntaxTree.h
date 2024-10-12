@@ -140,12 +140,12 @@ typedef struct Structure
 	StructureType type;
 	char order;
 	Cells *cells;
+	struct Structure *next;
 } Structure;
 
 typedef struct Program
 {
 	Structure *structure;
-	struct Program *next;
 } Program;
 
 /**
