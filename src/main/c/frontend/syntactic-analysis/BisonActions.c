@@ -158,6 +158,17 @@ StyleVariable *StyleVariableSemanticAction(char *name, Styles *s, StyleVariable 
 	return styleVar;
 }
 
+Structure *StructureSemanticAction(StructureType type, Cells *cells, StyleVariable *variables, AnnotationList *annotations)
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	Structure *structure = calloc(1, sizeof(Structure));
+	structure->type = type;
+	structure->cells = cells;
+	structure->variables = variables;
+	structure->annotations = annotations;
+	return structure;
+}
+
 Program *StructureProgramSemanticAction(CompilerState *compilerState, Structure *structure, Program *next)
 {
 	_logSyntacticAnalyzerAction(__FUNCTION__);

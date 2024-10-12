@@ -126,8 +126,8 @@ program: structure								{ $$ = StructureProgramSemanticAction(currentCompilerS
 	| structure program							{ $$ = StructureProgramSemanticAction(currentCompilerState(), $1, $2); }
 	;
 
-structure: set_style_variable[v0] annotations[a0] structure_type[t0] COLON OPEN_BRACES cells[c0] CLOSE_BRACES SEMICOLON		{ $$ = NULL; } // { $$ = StructureSemanticAction($t0, $c0, $v0, $a0); }
-	| set_style_variable[v1] annotations[a1] structure_type[t1] COLON OPEN_BRACKETS cells[c1] CLOSE_BRACKETS SEMICOLON		{ $$ = NULL; } // { $$ = StructureSemanticAction($t1, $c1, $v1, $a1); }
+structure: set_style_variable[v0] annotations[a0] structure_type[t0] COLON OPEN_BRACES cells[c0] CLOSE_BRACES SEMICOLON		{ $$ = StructureSemanticAction($t0, $c0, $v0, $a0); }
+	| set_style_variable[v1] annotations[a1] structure_type[t1] COLON OPEN_BRACKETS cells[c1] CLOSE_BRACKETS SEMICOLON		{ $$ = StructureSemanticAction($t1, $c1, $v1, $a1); }
 	;
 
 structure_type: ARRAY							{ $$ = StructureTypeArraySemanticAction(); }
