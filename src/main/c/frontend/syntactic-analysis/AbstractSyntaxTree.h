@@ -138,7 +138,7 @@ typedef struct Structure
 	StyleVariable *variables;
 	AnnotationList *annotations;
 	StructureType type;
-	char order;
+	CellType order;
 	Cells *cells;
 	struct Structure *next;
 } Structure;

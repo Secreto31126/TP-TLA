@@ -158,16 +158,29 @@ StyleVariable *StyleVariableSemanticAction(char *name, Styles *s, StyleVariable 
 	return styleVar;
 }
 
-Structure *StructureSemanticAction(StructureType type, Cells *cells, StyleVariable *variables, AnnotationList *annotations, Structure *next)
+static Structure *StructureSemanticAction(StructureType type, Cells *cells, StyleVariable *variables, AnnotationList *annotations, Structure *next, CellType order)
 {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Structure *structure = calloc(1, sizeof(Structure));
 	structure->type = type;
 	structure->cells = cells;
+	structure->order = order;
 	structure->variables = variables;
 	structure->annotations = annotations;
 	structure->next = next;
 	return structure;
+}
+
+Structure *OrderedStructureSemanticAction(StructureType type, Cells *cells, StyleVariable *variables, AnnotationList *annotations, Structure *next)
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return StructureSemanticAction(type, cells, variables, annotations, next, CELL_ORDERED);
+}
+
+Structure *UnorderedStructureSemanticAction(StructureType type, Cells *cells, StyleVariable *variables, AnnotationList *annotations, Structure *next)
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return StructureSemanticAction(type, cells, variables, annotations, next, CELL_UNORDERED);
 }
 
 Program *StructureProgramSemanticAction(CompilerState *compilerState, Structure *structure)
