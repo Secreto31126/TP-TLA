@@ -43,19 +43,17 @@ const int main(const int count, const char **arguments)
 		// Beginning of the Backend... ------------------------------------------------------------
 		logDebugging(logger, "Computing expression value...");
 		Program *program = compilerState.abstractSyntaxtTree;
-		// TODO: Remove when starting to work with back
 		goto SKIP_BACKEND;
-		ComputationResult computationResult = computeExpression(program->structure);
-		if (computationResult.succeed)
-		{
-			compilerState.value = computationResult.value;
-			generate(&compilerState);
-		}
-		else
-		{
-			logError(logger, "The computation phase rejects the input program.");
-			compilationStatus = FAILED;
-		}
+		generate(&compilerState);
+		// if (validationResult)
+		// {
+		// 	compilerState.value = computationResult.value;
+		// }
+		// else
+		// {
+		// 	logError(logger, "The computation phase rejects the input program.");
+		// 	compilationStatus = FAILED;
+		// }
 	// ...end of the Backend. -----------------------------------------------------------------
 	// ----------------------------------------------------------------------------------------
 	SKIP_BACKEND:
