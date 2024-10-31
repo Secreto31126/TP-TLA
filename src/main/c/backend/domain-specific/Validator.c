@@ -1,6 +1,13 @@
 #include "Validator.h"
 
 #define TOTAL_STRUCTURES 8
+// A variable name can only have lower or upper case letters, numbers and -
+// 26 + 26 + 10 + 1 = 62
+#define HASH_BASE 62
+// The number of the name chars to be hashed
+#define HASH_LENGTH 3
+// HASH_BASE (63) ^ HASH_LENGTH (3)
+#define HASH_SIZE 250047
 
 /* MODULE INTERNAL STATE */
 
@@ -8,6 +15,13 @@ static Logger *_logger = NULL;
 
 typedef bool (*structureValidators)(const Structure *);
 static structureValidators validators[TOTAL_STRUCTURES];
+
+struct VariableHashEntry
+{
+    StyleVariable *value;
+    struct VariableHashEntry *next;
+};
+static struct VariableHashEntry _variables[HASH_SIZE];
 
 void initializeValidatorModule()
 {
@@ -22,11 +36,139 @@ void shutdownValidatorModule()
     {
         destroyLogger(_logger);
     }
+
+    for (int i = 0; i < HASH_SIZE; i++)
+    {
+        struct VariableHashEntry *entry = &_variables[i];
+        while (entry)
+        {
+            struct VariableHashEntry *next = entry->next;
+            free(entry);
+            entry = next;
+        }
+    }
 }
 
 /* PRIVATE FUNCTIONS */
 
-static bool _validateStyleVariable(const char);
+/**
+ * @brief Calculates the hash of a variable name
+ * @note If the name is shorter than HASH_LENGTH, the algorithm will still work
+ *
+ * @param name
+ * @return int
+ */
+static int _getVariableHash(const char *name)
+{
+    int hash = 0;
+    for (int i = 0; i < HASH_LENGTH && name[i] != '\0'; i++)
+    {
+        int value = 0;
+        if (islower(name[i]))
+        {
+            value = name[i] - 'a';
+        }
+        else if (isupper(name[i]))
+        {
+            value = name[i] - 'A' + 26;
+        }
+        else if (isdigit(name[i]))
+        {
+            value = name[i] - '0' + 52;
+        }
+        else if (name[i] == '-')
+        {
+            value = 62;
+        }
+
+        hash = hash * HASH_BASE + value;
+    }
+
+    return hash;
+}
+
+/**
+ * @brief Retrieves a style variable by its reference in the hash table
+ *
+ * @param name The name of the variable
+ * @return StyleVariable* The variable if defined, NULL otherwise
+ */
+static StyleVariable *_getStyleVariableByReference(const char *name)
+{
+    int hash = _getVariableHash(name);
+    struct VariableHashEntry *entry = &_variables[hash];
+
+    while (entry)
+    {
+        int diff = strcmp(entry->value->name, name);
+
+        if (!diff)
+        {
+            return entry->value;
+        }
+
+        if (diff > 0)
+        {
+            return NULL;
+        }
+
+        entry = entry->next;
+    }
+
+    return NULL;
+}
+
+static bool _addStyleVariableToHash(StyleVariable *variable)
+{
+    int hash = _getVariableHash(variable->name);
+    struct VariableHashEntry *entry = &_variables[hash];
+
+    int diff;
+    while ((diff = strcmp(variable->name, entry->next)) < 0)
+    {
+        entry = entry->next;
+    }
+
+    if (diff == 0)
+    {
+        logError(_logger, "Style variable already defined");
+        return false;
+    }
+
+    struct VariableHashEntry *newEntry = malloc(sizeof(struct VariableHashEntry));
+    newEntry->value = variable;
+    newEntry->next = NULL;
+    entry->next = newEntry;
+
+    return true;
+}
+
+static bool _validateVariables(const StyleVariable *variables)
+{
+    if (variables == NULL)
+    {
+        return true;
+    }
+
+    if (!_validateStyleVariableReference(variables->name))
+    {
+        logError(_logger, "Invalid style variable reference");
+        return false;
+    }
+
+    return _validateVariables(variables->next);
+}
+
+static bool _validateStyleVariableReference(const char *reference)
+{
+    StyleVariable *variable = _getStyleVariableByReference(reference);
+    if (variable == NULL)
+    {
+        logError(_logger, "Style variable not defined");
+    }
+
+    return variable != NULL;
+}
 
 static bool _validateStyles(const Styles *styles)
 {
@@ -38,7 +180,7 @@ static bool _validateStyles(const Styles *styles)
     Styles *current = styles;
     while (current)
     {
-        if (styles->property == '$' && !_validateStyleVariable(styles->rule))
+        if (styles->property == '$' && !_validateStyleVariableReference(styles->rule))
         {
             logError(_logger, "Invalid style variable");
             return false;
@@ -48,6 +190,28 @@ static bool _validateStyles(const Styles *styles)
     }
 
     return _validateStyles(styles->next);
+}
+
+static bool _validateStyleVariables(const StyleVariable *variables)
+{
+    if (variables == NULL)
+    {
+        return true;
+    }
+
+    if (!_validateStyles(variables->styles))
+    {
+        logError(_logger, "Invalid styles");
+        return false;
+    }
+
+    if (!_addStyleVariableToHash(variables))
+    {
+        logError(_logger, "Duplicated style variable");
+        return false;
+    }
+
+    return _validateStyleVariable(variables->next);
 }
 
 static bool _validateTreeCell(const Cells *cell)

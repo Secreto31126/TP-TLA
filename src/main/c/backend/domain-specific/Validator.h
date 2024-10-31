@@ -7,6 +7,6 @@
 #include "../../shared/Logger.h"
 #include "../../shared/Type.h"
 
-bool validateStructures(const Program *program);
+bool validateStructures(const Structure *structure);
 
 #endif
