@@ -13,6 +13,18 @@
 
 static Logger *_logger = NULL;
 
+static bool _validateTree(const Structure *tree);
+static int _getVariableHash(const char *name);
+static StyleVariable *_getStyleVariableByReference(const char *name);
+static bool _addStyleVariableToHash(const StyleVariable *variable);
+static bool _validateStyleVariableReference(const char *reference);
+static bool _validateStyles(const Styles *styles);
+static bool _validateStyleVariables(const StyleVariable *variables);
+static bool _validateTreeCell(const Cells *cell);
+static bool _validateTree(const Structure *tree);
+
+
+
 typedef bool (*structureValidators)(const Structure *);
 static structureValidators validators[TOTAL_STRUCTURES];
 
@@ -118,13 +130,13 @@ static StyleVariable *_getStyleVariableByReference(const char *name)
     return NULL;
 }
 
-static bool _addStyleVariableToHash(StyleVariable *variable)
+static bool _addStyleVariableToHash(const StyleVariable *variable)
 {
     int hash = _getVariableHash(variable->name);
     struct VariableHashEntry *entry = &_variables[hash];
 
     int diff;
-    while ((diff = strcmp(variable->name, entry->next)) < 0)
+    while ((diff = strcmp(variable->name, entry->value->name)) < 0)
     {
         entry = entry->next;
     }
@@ -180,7 +192,7 @@ static bool _validateStyles(const Styles *styles)
     Styles *current = styles;
     while (current)
     {
-        if (styles->property == '$' && !_validateStyleVariableReference(styles->rule))
+        if (*styles->property == '$' && !_validateStyleVariableReference(styles->rule))
         {
             logError(_logger, "Invalid style variable");
             return false;
@@ -211,7 +223,7 @@ static bool _validateStyleVariables(const StyleVariable *variables)
         return false;
     }
 
-    return _validateStyleVariable(variables->next);
+    return _validateStyleVariables(variables->next);
 }
 
 static bool _validateTreeCell(const Cells *cell)
@@ -221,7 +233,7 @@ static bool _validateTreeCell(const Cells *cell)
         return true;
     }
 
-    if (!cell->value->type != CELL_FINAL)
+    if (cell->value->type != CELL_FINAL)
     {
         logError(_logger, "First cell value is not final");
         return false;

@@ -44,7 +44,7 @@ const int main(const int count, const char **arguments)
 		// Beginning of the Backend... ------------------------------------------------------------
 		logDebugging(logger, "Computing expression value...");
 		Program *program = compilerState.abstractSyntaxtTree;
-		goto SKIP_BACKEND;
+
 		validateStructures(program->structure);
 		generate(&compilerState);
 		// if (validationResult)
@@ -58,7 +58,7 @@ const int main(const int count, const char **arguments)
 		// }
 	// ...end of the Backend. -----------------------------------------------------------------
 	// ----------------------------------------------------------------------------------------
-	SKIP_BACKEND:
+
 		logDebugging(logger, "Releasing AST resources...");
 		releaseProgram(program);
 	}
