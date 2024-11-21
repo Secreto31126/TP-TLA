@@ -23,3 +23,5 @@ BisonParser.h
 FlexScanner.c
 /.idea
 /cmake-build-debug
+CMakeLists.txt
+
