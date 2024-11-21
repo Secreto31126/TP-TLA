@@ -5,8 +5,9 @@
 
 /**
  * The general status of a compilation.
-*/
-typedef enum {
+ */
+typedef enum
+{
 	SUCCEED = 0,
 	FAILED = 1
 } CompilationStatus;
@@ -15,12 +16,13 @@ typedef enum {
  * The global state of the compiler. Should transport every data structure
  * needed across the different phases of a compilation.
  */
-typedef struct {
+typedef struct
+{
 	// The root node of the AST.
-	void * abstractSyntaxtTree;
+	void *abstractSyntaxtTree;
 
 	// A flag that indicates the current state of the compilation so far.
-	boolean succeed;
+	bool succeed;
 
 	// TODO: Add an stack to handle nested scopes.
 	// TODO: Add a symbol table.
