@@ -13,17 +13,69 @@
 
 static Logger *_logger = NULL;
 
+/**
+ * @brief Validates the content of a structure
+ *
+ * @param tree The structure to be validated
+ * @return true The structure is valid
+ * @return false The structure is invalid
+ */
 static bool _validateTree(const Structure *tree);
+/**
+ * @brief Calculates the hash of a variable name
+ * @note If the name is shorter than HASH_LENGTH, the algorithm will still work
+ *
+ * @param name The name of the variable
+ * @return int The hash of the variable
+ */
 static int _getVariableHash(const char *name);
+/**
+ * @brief Retrieve a style variable by its reference in the hash table
+ *
+ * @param name The name of the variable
+ * @return const StyleVariable* The variable if defined, NULL otherwise
+ */
 static const StyleVariable *_getStyleVariableByReference(const char *name);
+/**
+ * @brief Inserts a style variable in the hash table
+ *
+ * @param variable The variable to be inserted
+ * @return true The variable was inserted successfully
+ * @return false The variable is already defined
+ */
 static bool _addStyleVariableToHash(const StyleVariable *variable);
+/**
+ * @brief Checks if a style variable reference exists in the hash table
+ *
+ * @param reference The reference to be checked
+ * @return true The reference exists
+ * @return false The reference does not exist
+ */
 static bool _validateStyleVariableReference(const char *reference);
+/**
+ * @brief Validates the content of a style variable or annotation
+ *
+ * @param styles The styles to be validated
+ * @return true If the styles are valid
+ * @return false If the styles are invalid
+ */
 static bool _validateStyles(const Styles *styles);
+/**
+ * @brief Validates the variables of a structure
+ *
+ * @param variables The variables to be validated
+ * @return true If the variables are valid
+ * @return false If the variables are invalid
+ */
 static bool _validateStyleVariables(const StyleVariable *variables);
+/**
+ * @brief Validates the cell of a tree
+ *
+ * @param cell The cell to be validated
+ * @return true The cell is valid
+ * @return false The cell is invalid
+ */
 static bool _validateTreeCell(const Cells *cell);
-static bool _validateTree(const Structure *tree);
-
-
 
 typedef bool (*structureValidators)(const Structure *);
 static structureValidators validators[TOTAL_STRUCTURES];
@@ -63,13 +115,6 @@ void shutdownValidatorModule()
 
 /* PRIVATE FUNCTIONS */
 
-/**
- * @brief Calculates the hash of a variable name
- * @note If the name is shorter than HASH_LENGTH, the algorithm will still work
- *
- * @param name
- * @return int
- */
 static int _getVariableHash(const char *name)
 {
     int hash = 0;
@@ -153,22 +198,6 @@ static bool _addStyleVariableToHash(const StyleVariable *variable)
     entry->next = newEntry;
 
     return true;
-}
-
-static bool _validateVariables(const StyleVariable *variables)
-{
-    if (variables == NULL)
-    {
-        return true;
-    }
-
-    if (!_validateStyleVariableReference(variables->name))
-    {
-        logError(_logger, "Invalid style variable reference");
-        return false;
-    }
-
-    return _validateVariables(variables->next);
 }
 
 static bool _validateStyleVariableReference(const char *reference)
