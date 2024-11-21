@@ -15,7 +15,7 @@ static Logger *_logger = NULL;
 
 static bool _validateTree(const Structure *tree);
 static int _getVariableHash(const char *name);
-static StyleVariable *_getStyleVariableByReference(const char *name);
+static const StyleVariable *_getStyleVariableByReference(const char *name);
 static bool _addStyleVariableToHash(const StyleVariable *variable);
 static bool _validateStyleVariableReference(const char *reference);
 static bool _validateStyles(const Styles *styles);
@@ -30,7 +30,7 @@ static structureValidators validators[TOTAL_STRUCTURES];
 
 struct VariableHashEntry
 {
-    StyleVariable *value;
+    const StyleVariable *value;
     struct VariableHashEntry *next;
 };
 static struct VariableHashEntry _variables[HASH_SIZE];
@@ -105,7 +105,7 @@ static int _getVariableHash(const char *name)
  * @param name The name of the variable
  * @return StyleVariable* The variable if defined, NULL otherwise
  */
-static StyleVariable *_getStyleVariableByReference(const char *name)
+static const StyleVariable *_getStyleVariableByReference(const char *name)
 {
     int hash = _getVariableHash(name);
     struct VariableHashEntry *entry = &_variables[hash];
@@ -173,7 +173,7 @@ static bool _validateVariables(const StyleVariable *variables)
 
 static bool _validateStyleVariableReference(const char *reference)
 {
-    StyleVariable *variable = _getStyleVariableByReference(reference);
+    const StyleVariable *variable = _getStyleVariableByReference(reference);
     if (variable == NULL)
     {
         logError(_logger, "Style variable not defined");
@@ -189,7 +189,7 @@ static bool _validateStyles(const Styles *styles)
         return true;
     }
 
-    Styles *current = styles;
+    const Styles *current = styles;
     while (current)
     {
         if (*styles->property == '$' && !_validateStyleVariableReference(styles->rule))
