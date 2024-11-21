@@ -21,8 +21,9 @@ void shutdownCalculatorModule();
  * The result of a computation. It's considered valid only if "succeed" is
  * true.
  */
-typedef struct {
-	boolean succeed;
+typedef struct
+{
+	bool succeed;
 	int value;
 } ComputationResult;
 
@@ -38,16 +39,16 @@ ComputationResult subtract(const int minuend, const int subtract);
 /**
  * Computes the final value of a mathematical constant.
  */
-ComputationResult computeConstant(Constant * constant);
+ComputationResult computeConstant(Constant *constant);
 
 /**
  * Computes the final value of a mathematical expression.
  */
-ComputationResult computeExpression(Expression * expression);
+ComputationResult computeExpression(Expression *expression);
 
 /**
  * Computes the final value of a mathematical factor.
  */
-ComputationResult computeFactor(Factor * factor);
+ComputationResult computeFactor(Factor *factor);
 
 #endif
