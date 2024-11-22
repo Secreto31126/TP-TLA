@@ -14,14 +14,6 @@
 static Logger *_logger = NULL;
 
 /**
- * @brief Validates the content of a structure
- *
- * @param tree The structure to be validated
- * @return true The structure is valid
- * @return false The structure is invalid
- */
-static bool _validateTree(const Structure *tree);
-/**
  * @brief Calculates the hash of a variable name
  * @note If the name is shorter than HASH_LENGTH, the algorithm will still work
  *
@@ -69,6 +61,22 @@ static bool _validateStyles(const Styles *styles);
  */
 static bool _validateStyleVariables(const StyleVariable *variables);
 /**
+ * @brief Validates the content of an array structure
+ *
+ * @param array The structure to be validated
+ * @return true The structure is valid
+ * @return false The structure is invalid
+ */
+static bool _validateArray(const Structure *array);
+/**
+ * @brief Validates the cell of an array
+ *
+ * @param cell The cell to be validated
+ * @return true The cell is valid
+ * @return false The cell is invalid
+ */
+static bool _validateArrayCells(const Cells *cell);
+/**
  * @brief Validates the cell of a tree
  *
  * @param cell The cell to be validated
@@ -76,6 +84,31 @@ static bool _validateStyleVariables(const StyleVariable *variables);
  * @return false The cell is invalid
  */
 static bool _validateTreeCell(const Cells *cell);
+/**
+ * @brief Validates the content of a tree structure
+ *
+ * @param tree The structure to be validated
+ * @return true The structure is valid
+ * @return false The structure is invalid
+ */
+static bool _validateTree(const Structure *tree);
+/**
+ * @brief Validates the cell of a list
+ *
+ * @param cell The cell to be validated
+ * @return true The cell is valid
+ * @return false The cell is invalid
+ */
+static bool _validateListCell(const Cells *cell);
+/**
+ * @brief Validates the content of a list structure
+ *
+ * @param list The structure to be validated
+ * @return true The structure is valid
+ * @return false The structure is invalid
+ */
+static bool _validateList(const Structure *list);
+
 
 typedef bool (*structureValidators)(const Structure *);
 static structureValidators validators[TOTAL_STRUCTURES];
@@ -92,6 +125,9 @@ void initializeValidatorModule()
     _logger = createLogger("Calculator");
 
     validators[STRUCTURE_TREE] = _validateTree;
+    validators[STRUCTURE_ARRAY] = _validateArray;
+    validators[STRUCTURE_LIST] = _validateList;
+
 }
 
 void shutdownValidatorModule()
@@ -255,6 +291,56 @@ static bool _validateStyleVariables(const StyleVariable *variables)
     return _validateStyleVariables(variables->next);
 }
 
+static bool _validateAnnotations(const AnnotationList* annotations)
+{
+    if (annotations == NULL)
+    {
+        return true;
+    }
+
+    if (!_validateStyles(annotations->value->style))
+    {
+        logError(_logger, "Invalid annotation style");
+        return false;
+    }
+
+    return _validateAnnotations(annotations->next);
+
+}
+
+static bool _validateArrayCells(const Cells *cell)
+{
+    const Cells *current = cell;
+    while (current)
+    {
+        if (current->value->type != CELL_FINAL)
+        {
+            return false;
+        }
+
+        current = current->next;
+    }
+
+    return true;
+}
+
+static bool _validateArray(const Structure *array)
+{
+    if (array == NULL)
+    {
+        return true;
+    }
+
+    if (array->cells == NULL)
+    {
+        logError(_logger, "Array has no cells");
+        return false;
+    }
+
+    return _validateArrayCells(array->cells);
+}
+
+
 static bool _validateTreeCell(const Cells *cell)
 {
     if (!cell)
@@ -299,7 +385,41 @@ static bool _validateTree(const Structure *tree)
     return _validateTreeCell(tree->cells);
 }
 
+static bool _validateListCell(const Cells *cell)
+{
+    const Cells *current = cell;
+    while (current)
+    {
+        if (current->value->type != CELL_FINAL)
+        {
+            return false;
+        }
+
+        current = current->next;
+    }
+
+    return true;
+}
+
+static bool _validateList(const Structure *list)
+{
+    if (list == NULL)
+    {
+        return true;
+    }
+
+    if (list->cells == NULL)
+    {
+        logError(_logger, "List has no cells");
+        return false;
+    }
+
+    return _validateListCell(list->cells);
+}
+
 /* PUBLIC FUNCTIONS */
+
+
 
 bool validateStructures(const Structure *structure)
 {
@@ -308,7 +428,11 @@ bool validateStructures(const Structure *structure)
         return true;
     }
 
-    bool result = validators[structure->type](structure);
+    bool result;
+    result = _validateStyleVariables(structure->variables);
+    result = result && _validateAnnotations(structure->annotations);
+    result = result && validators[structure->type](structure);
+
 
     if (!result)
     {
