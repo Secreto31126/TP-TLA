@@ -30,7 +30,7 @@ static void _generatePrologue(void);
 static char *_indentation(const unsigned int indentationLevel);
 static void _output(const unsigned int indentationLevel, const char *const format, ...);
 
-static void _getStyleProperties(const Styles *styles, char **color, char **fontsize, char **style)
+static void _getStyleProperties(const Styles *styles, char **color, char **fontsize, char **style, bool *colorModified, bool *fontsizeModified, bool *styleModified, bool override)
 {
 	const Styles *current = styles;
 	while (current)
@@ -38,18 +38,24 @@ static void _getStyleProperties(const Styles *styles, char **color, char **fonts
 		switch (current->property)
 		{
 		case PROPERTY_COLOR:
-			*color = current->rule;
+			if (override || !*colorModified)
+				*color = current->rule;
+			*colorModified = true;
 			break;
 		case PROPERTY_SIZE:
-			*fontsize = current->rule;
+			if (override || !*fontsizeModified)
+				*fontsize = current->rule;
+			*fontsizeModified = true;
 			break;
 		case PROPERTY_BORDER:
-			*style = current->rule;
+			if (override || !*styleModified)
+				*style = current->rule;
+			*styleModified = true;
 			break;
 		case PROPERTY_VARIABLE:
 			const StyleVariable *variable = getStyleVariableByReference(current->rule);
 			if (variable)
-				_getStyleProperties(variable->styles, color, fontsize, style);
+				_getStyleProperties(variable->styles, color, fontsize, style, colorModified, fontsizeModified, styleModified, override);
 		}
 
 		current = current->next;
@@ -64,32 +70,28 @@ static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int *n
 	char *fontsize = "11";
 	char *style = "solid";
 
-	AnnotationList *defaultAnnotation = tree->annotations;
-	while (defaultAnnotation)
+	bool colorModified = false;
+	bool fontsizeModified = false;
+	bool styleModified = false;
+
+	AnnotationList *annotationList = tree->annotations;
+	while (annotationList)
 	{
-		if (!defaultAnnotation->value->target)
+		if (!annotationList->value->target)
 		{
-			_getStyleProperties(defaultAnnotation->value->style, &color, &fontsize, &style);
-			break;
+			_getStyleProperties(annotationList->value->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified, false);
 		}
-
-		defaultAnnotation = defaultAnnotation->next;
-	}
-
-	if (treeCell->label)
-	{
-		AnnotationList *annotationList = tree->annotations;
-		while (annotationList && annotationList->value->target)
+		else if (treeCell->label)
 		{
 			Annotation *annotation = annotationList->value;
 
 			if (strcmp(annotation->target, treeCell->label) == 0)
 			{
-				_getStyleProperties(annotation->style, &color, &fontsize, &style);
+				_getStyleProperties(annotation->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified, true);
 			}
-
-			annotationList = annotationList->next;
 		}
+
+		annotationList = annotationList->next;
 	}
 
 	_output(1, "node%d [label=\"%s\" color=%s fontsize=%s style=%s]\n", id, treeCell->value->value, color, fontsize, style);
