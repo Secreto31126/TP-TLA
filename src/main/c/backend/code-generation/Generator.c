@@ -148,12 +148,47 @@ static void _generateTree(Structure *tree)
 	_output(0, "}\n");
 }
 
+static void _generateList(Structure *list)
+{
+	bool doubled = list->type == STRUCTURE_DOUBLE_LINKED_LIST;
+	bool linked = doubled || list->type == STRUCTURE_LINKED_LIST;
+
+	_output(0, "digraph %s%sList {\n", doubled ? "Double" : "", linked ? "Linked" : "");
+	_output(1, "rankdir=LR\n");
+	_output(1, "edge [dir=%s]\n", doubled ? "both" : linked ? "forward"
+															: "none");
+
+	size_t n = 0;
+	Cells *current = list->cells;
+	while (current)
+	{
+		properties p = _getProperties(list, current);
+
+		size_t id = n++;
+		_output(1, "node%d [label=\"%s\" color=%s fontsize=%s style=%s]\n", id, current->value->value, p.color, p.fontsize, p.style);
+
+		if (current->next)
+		{
+			_output(1, "node%d -> node%d\n", id, n);
+		}
+
+		current = current->next;
+	}
+
+	_output(0, "}\n");
+}
+
 static void _generateStructure(Structure *structure)
 {
 	switch (structure->type)
 	{
 	case STRUCTURE_TREE:
 		_generateTree(structure);
+		break;
+	case STRUCTURE_LIST:
+	case STRUCTURE_LINKED_LIST:
+	case STRUCTURE_DOUBLE_LINKED_LIST:
+		_generateList(structure);
 		break;
 	}
 }
