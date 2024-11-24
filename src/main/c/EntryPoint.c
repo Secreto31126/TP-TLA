@@ -47,11 +47,14 @@ const int main(const int count, const char **arguments)
 		Program *program = compilerState.abstractSyntaxtTree;
 
 		bool validationResult = validateStructures(program->structure);
-		generate(&compilerState);
 		if (!validationResult)
 		{
 			logError(logger, "The computation phase rejects the input program.");
 			compilationStatus = FAILED;
+		}
+		else
+		{
+			generate(&compilerState);
 		}
 		// ...end of the Backend. -----------------------------------------------------------------
 		// ----------------------------------------------------------------------------------------
