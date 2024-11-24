@@ -1,0 +1,17 @@
+//Tree with many nodes
+@Customize(BLACK, color(red) fontSize(30))
+@Default(color(blue))
+Tree:{
+    RED:"1",
+    BLACK:"2",
+    [
+        RED:"6",
+        {
+            RED:"3",
+            [
+                BLACK:"4", RED:"5"
+            ],
+            RED: "7"
+        }
+    ]
+};
