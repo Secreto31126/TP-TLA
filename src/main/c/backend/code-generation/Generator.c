@@ -62,7 +62,7 @@ static void _getStyleProperties(const Styles *styles, char **color, char **fonts
 	}
 }
 
-static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int *n)
+static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int *n, bool big_brother)
 {
 	const unsigned int id = *n;
 	(*n)++;
@@ -96,11 +96,17 @@ static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int *n
 
 	_output(1, "node%d [label=\"%s\" color=%s fontsize=%s style=%s]\n", id, treeCell->value->value, color, fontsize, style);
 
+	if (!big_brother)
+	{
+		return;
+	}
+
 	Cells *current = treeCell->next;
 	while (current)
 	{
 		_output(1, "node%d -> node%d\n", id, *n);
-		_generateTreeNodes(tree, current, n);
+		bool is_final = current->value->type == CELL_FINAL;
+		_generateTreeNodes(tree, is_final ? current : current->value->cells, n, !is_final);
 		current = current->next;
 	}
 }
@@ -109,7 +115,7 @@ static void _generateTree(Structure *tree)
 {
 	unsigned int n = 0;
 	_output(0, "digraph Tree {\n");
-	_generateTreeNodes(tree, tree->cells, &n);
+	_generateTreeNodes(tree, tree->cells, &n, true);
 	_output(0, "}\n");
 }
 
