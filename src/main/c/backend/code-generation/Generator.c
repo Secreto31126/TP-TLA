@@ -155,7 +155,7 @@ static void _generateTree(Structure *tree)
 	_output(0, "}\n");
 }
 
-static void _generateGraphNodes(Structure *graph, Cells *graphCell)
+static void _generateGraphNodes(Structure *graph, Cells *graphCell, bool directed)
 {
 	if (!graphCell)
 	{
@@ -167,7 +167,7 @@ static void _generateGraphNodes(Structure *graph, Cells *graphCell)
 	if (graphCell->value->type == CELL_FINAL)
 	{
 		_output(1, "node%s [label=\"%s\" color=%s fontsize=%s style=%s]\n", graphCell->label, graphCell->value->value, p.color.value, p.fontsize.value, p.style.value);
-		_generateGraphNodes(graph, graphCell->next);
+		_generateGraphNodes(graph, graphCell->next, directed);
 		return;
 	}
 
@@ -183,23 +183,24 @@ static void _generateGraphNodes(Structure *graph, Cells *graphCell)
 			continue;
 		}
 
-		_output(1, "node%s -- node%s\n", graphCell->label, child->label);
+		_output(1, "node%s -%s node%s\n", graphCell->label, directed ? ">" : "-", child->label);
 
 		if (child->value && child->value->type != CELL_FINAL)
 		{
-			_generateGraphNodes(graph, child);
+			_generateGraphNodes(graph, child, directed);
 		}
 
 		child = child->next;
 	}
 
-	_generateGraphNodes(graph, graphCell->next);
+	_generateGraphNodes(graph, graphCell->next, directed);
 }
 
 static void _generateGraph(Structure *graph)
 {
-	_output(0, "graph NotGraph {\n");
-	_generateGraphNodes(graph, graph->cells);
+	bool directed = graph->type == STRUCTURE_DIRECTED_GRAPH;
+	_output(0, "%sgraph AnyGraph {\n", directed ? "di" : "");
+	_generateGraphNodes(graph, graph->cells, directed);
 	_output(0, "}\n");
 }
 
@@ -251,6 +252,7 @@ static void _generateStructure(Structure *structure)
 		_generateList(structure);
 		break;
 	case STRUCTURE_GRAPH:
+	case STRUCTURE_DIRECTED_GRAPH:
 		_generateGraph(structure);
 		break;
 	}
