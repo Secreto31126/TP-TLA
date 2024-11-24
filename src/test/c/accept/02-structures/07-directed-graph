@@ -7,7 +7,7 @@ DirectedGraph: {
         B,              
         C: { "Content", A, B, C } 
     },
-    B: { A, "La letra B", C, E },  
+    B: { "La letra B", A, C, E },  
     D: "Alone",
     E: { "Algo", "Algo más", "Otra cosa más" }    
 };
