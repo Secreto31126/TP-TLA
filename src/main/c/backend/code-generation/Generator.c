@@ -234,6 +234,36 @@ static void _generateList(Structure *list)
 	_output(0, "}\n");
 }
 
+static void _generateRow(Structure *row, int column)
+{
+	_output(3, "<tr>\n");
+	properties first = _getProperties(row, row->cells);
+
+	_output(4, "<td color=\"%s\" style=\"%s\"><font point-size=\"%s\">%s</font></td>\n", first.color.value, first.style.value, first.fontsize.value, row->cells->value->value);
+
+	Cells *current = row->cells->next;
+	int i = 0;
+	while(current)
+	{
+		i++;
+
+		properties p = _getProperties(row, current);
+
+		_output(4, "<td color=\"%s\" style=\"%s\"><font point-size=\"%s\">%s</font></td>\n", p.color.value, p.style.value, p.fontsize.value, current->value->value);
+		current = current->next;
+
+	}
+
+	Structure property = {0};
+	properties defaults = _getProperties(&property, NULL);
+	while(i < column)
+	{
+		_output(4, "<td color=\"%s\" style=\"%s\"><font point-size=\"%s\"> </font></td>\n",  defaults.color.value, defaults.style.value, defaults.fontsize.value);
+		i++;
+	}
+
+	_output(3, "</tr>\n");
+}
 
 static void _generateArray(Structure *array)
 {
@@ -242,19 +272,8 @@ static void _generateArray(Structure *array)
 	_output(1, "array [label=<\n");
 	_output(2, "<table border=\"1\" cellborder=\"1\" cellpadding=\"5\" cellspacing=\"2\">\n");
 
-	_output(3, "<tr>\n");
-	properties first = _getProperties(array, array->cells);
-	_output(4, "<td color=\"%s\" style=\"%s\"><font point-size=\"%s\">%s</font></td>\n", first.color.value, first.style.value, first.fontsize.value, array->cells->value->value);
+	_generateRow(array, 0);
 
-	Cells *current = array->cells->next;
-	while(current)
-	{
-		properties p = _getProperties(array, current);
-		_output(4, "<td color=\"%s\" style=\"%s\"><font point-size=\"%s\">%s</font></td>\n", p.color.value, p.style.value, p.fontsize.value, current->value->value);
-		current = current->next;
-	}
-
-	_output(3, "</tr>\n");
 	_output(2, "</table>\n");
 	_output(1, ">]\n");
 
@@ -265,13 +284,21 @@ static void _generateArray(Structure *array)
 
 static void _generateTable(Structure *structure)
 {
-	_output(0, "digraph %s {\n", structure->type == STRUCTURE_TABLE ? "Table" : "Array");
+	_output(0, "digraph Table {\n");
 	_output(1, "node [shape=plaintext]\n");
-	_output(0, "table [label=<\n");
+	_output(1, "table [label=<\n");
 	_output(1, "<table border=\"1\" cellborder=\"1\" cellpadding=\"5\" cellspacing=\"2\">\n");
 
 
+	while(structure)
+	{
+		_generateRow(structure,3);
+		structure = structure->next;
+	}
+	_output(2, "</table>\n");
+	_output(1, ">]\n");
 
+	_output(0, "}\n");
 }
 
 

@@ -1,4 +1,5 @@
 //A table
+@Customize(A, color(red))
 Table: [
     { A: "A1", "B1", "C1" },
     { C: "val2" },
