@@ -3,7 +3,7 @@
 /* MODULE INTERNAL STATE */
 
 static Logger *_logger = NULL;
-static boolean _logIgnoredLexemes = true;
+static bool _logIgnoredLexemes = true;
 
 void initializeFlexActionsModule()
 {
@@ -154,6 +154,13 @@ Token StyleVariableLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext)
 	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
 	lexicalAnalyzerContext->semanticValue->string = lexicalAnalyzerContext->lexeme;
 	return STYLE_VARIABLE;
+}
+
+Token StylePropertyLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext, Token token)
+{
+	_logLexicalAnalyzerContext(__FUNCTION__, lexicalAnalyzerContext);
+	lexicalAnalyzerContext->semanticValue->string = lexicalAnalyzerContext->lexeme;
+	return token;
 }
 
 Token LabelLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext)

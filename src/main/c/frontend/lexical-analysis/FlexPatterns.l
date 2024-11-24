@@ -54,6 +54,10 @@
 "DirectedGraph"									{ return StructureTypeLexemeAction(createLexicalAnalyzerContext(), DIRECTED_GRAPH); }
 "Table"											{ return StructureTypeLexemeAction(createLexicalAnalyzerContext(), TABLE); }
 
+"border" 										{ return StylePropertyLexemeAction(createLexicalAnalyzerContext(), BORDER); }
+"color" 										{ return StylePropertyLexemeAction(createLexicalAnalyzerContext(), COLOR); }
+"fontSize"										{ return StylePropertyLexemeAction(createLexicalAnalyzerContext(), SIZE); }
+
 "{"												{ return BracesLexemeAction(createLexicalAnalyzerContext(), OPEN_BRACES); }
 "}"												{ return BracesLexemeAction(createLexicalAnalyzerContext(), CLOSE_BRACES); }
 

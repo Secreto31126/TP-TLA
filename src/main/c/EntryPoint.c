@@ -1,5 +1,6 @@
 #include "backend/code-generation/Generator.h"
 #include "backend/domain-specific/Calculator.h"
+#include "backend/domain-specific/Validator.h"
 #include "frontend/lexical-analysis/FlexActions.h"
 #include "frontend/syntactic-analysis/AbstractSyntaxTree.h"
 #include "frontend/syntactic-analysis/BisonActions.h"
@@ -23,6 +24,7 @@ const int main(const int count, const char **arguments)
 	initializeAbstractSyntaxTreeModule();
 	initializeCalculatorModule();
 	initializeGeneratorModule();
+	initializeValidatorModule();
 
 	// Logs the arguments of the application.
 	for (int k = 0; k < count; ++k)
@@ -43,22 +45,17 @@ const int main(const int count, const char **arguments)
 		// Beginning of the Backend... ------------------------------------------------------------
 		logDebugging(logger, "Computing expression value...");
 		Program *program = compilerState.abstractSyntaxtTree;
-		// TODO: Remove when starting to work with back
-		goto SKIP_BACKEND;
-		ComputationResult computationResult = computeExpression(program->structure);
-		if (computationResult.succeed)
-		{
-			compilerState.value = computationResult.value;
-			generate(&compilerState);
-		}
-		else
+
+		bool validationResult = validateStructures(program->structure);
+		generate(&compilerState);
+		if (!validationResult)
 		{
 			logError(logger, "The computation phase rejects the input program.");
 			compilationStatus = FAILED;
 		}
-	// ...end of the Backend. -----------------------------------------------------------------
-	// ----------------------------------------------------------------------------------------
-	SKIP_BACKEND:
+		// ...end of the Backend. -----------------------------------------------------------------
+		// ----------------------------------------------------------------------------------------
+
 		logDebugging(logger, "Releasing AST resources...");
 		releaseProgram(program);
 	}
@@ -69,6 +66,7 @@ const int main(const int count, const char **arguments)
 	}
 
 	logDebugging(logger, "Releasing modules resources...");
+	shutdownValidatorModule();
 	shutdownGeneratorModule();
 	shutdownCalculatorModule();
 	shutdownAbstractSyntaxTreeModule();

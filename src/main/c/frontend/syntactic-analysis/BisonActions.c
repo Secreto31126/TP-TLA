@@ -138,7 +138,7 @@ Annotation *AnnotationStyleSemanticAction(char *t, Styles *s)
 	return annotation;
 }
 
-Styles *StylesSemanticAction(char *p, char *r, Styles *n)
+Styles *StylesSemanticAction(PropertyType p, char *r, Styles *n)
 {
 	_logSyntacticAnalyzerAction(__FUNCTION__);
 	Styles *style = calloc(1, sizeof(Styles));
@@ -146,6 +146,24 @@ Styles *StylesSemanticAction(char *p, char *r, Styles *n)
 	style->rule = r;
 	style->next = n;
 	return style;
+}
+
+PropertyType StyleBorderPropertySemanticAction()
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return PROPERTY_BORDER;
+}
+
+PropertyType StyleColorPropertySemanticAction()
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return PROPERTY_COLOR;
+}
+
+PropertyType StyleSizePropertySemanticAction()
+{
+	_logSyntacticAnalyzerAction(__FUNCTION__);
+	return PROPERTY_SIZE;
 }
 
 StyleVariable *StyleVariableSemanticAction(char *name, Styles *s, StyleVariable *n)
@@ -167,6 +185,7 @@ static Structure *StructureSemanticAction(StructureType type, Cells *cells, Styl
 	structure->order = order;
 	structure->variables = variables;
 	structure->annotations = annotations;
+	structure->labels = NULL;
 	structure->next = next;
 	return structure;
 }

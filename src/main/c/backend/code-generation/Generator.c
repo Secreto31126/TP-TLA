@@ -166,6 +166,7 @@ static void _output(const unsigned int indentationLevel, const char * const form
 /** PUBLIC FUNCTIONS */
 
 void generate(CompilerState * compilerState) {
+	return;
 	logDebugging(_logger, "Generating final output...");
 	_generatePrologue();
 	_generateProgram(compilerState->abstractSyntaxtTree);
