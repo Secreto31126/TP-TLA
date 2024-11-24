@@ -1,4 +1,4 @@
-@Default(border(double))
+@Default(border(solid))
 Tree:[
     A:"a"
 ];

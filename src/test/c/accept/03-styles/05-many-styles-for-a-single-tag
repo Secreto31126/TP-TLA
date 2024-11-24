@@ -1,4 +1,4 @@
-@Customize(A, border(double) color(red) fontSize(large))
+@Customize(A, border(dotted) color(red) fontSize(12))
 Array:[
     A:"elemento"
 ];

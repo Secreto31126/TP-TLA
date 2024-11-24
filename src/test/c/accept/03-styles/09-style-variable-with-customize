@@ -1,4 +1,4 @@
-$style: border(double);
+$style: border(solid);
 @Customize(A, $style)
 Array:[
     A:"elemento"

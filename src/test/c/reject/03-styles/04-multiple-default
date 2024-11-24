@@ -1,5 +1,5 @@
-@Default(border(red))
-@Default(border(double))
+@Default(border(solid))
+@Default(color(red))
 Array:[
     "A"
 ];

@@ -1,4 +1,4 @@
-@Customize(A, border(double))
+@Customize(A, border(dotted))
 Tree: [
     "a"
 ];
