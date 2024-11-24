@@ -155,6 +155,54 @@ static void _generateTree(Structure *tree)
 	_output(0, "}\n");
 }
 
+static void _generateGraphNodes(Structure *graph, Cells *graphCell)
+{
+	if (!graphCell)
+	{
+		return;
+	}
+
+	properties p = _getProperties(graph, graphCell);
+
+	if (graphCell->value->type == CELL_FINAL)
+	{
+		_output(1, "node%s [label=\"%s\" color=%s fontsize=%s style=%s]\n", graphCell->label, graphCell->value->value, p.color.value, p.fontsize.value, p.style.value);
+		_generateGraphNodes(graph, graphCell->next);
+		return;
+	}
+
+	char *label = graphCell->value->cells->value->value;
+	_output(1, "node%s [label=\"%s\" color=%s fontsize=%s style=%s]\n", graphCell->label, label, p.color.value, p.fontsize.value, p.style.value);
+
+	Cells *child = graphCell->value->cells->next;
+	while (child)
+	{
+		if (!child->label)
+		{
+			child = child->next;
+			continue;
+		}
+
+		_output(1, "node%s -- node%s\n", graphCell->label, child->label);
+
+		if (child->value && child->value->type != CELL_FINAL)
+		{
+			_generateGraphNodes(graph, child);
+		}
+
+		child = child->next;
+	}
+
+	_generateGraphNodes(graph, graphCell->next);
+}
+
+static void _generateGraph(Structure *graph)
+{
+	_output(0, "graph NotGraph {\n");
+	_generateGraphNodes(graph, graph->cells);
+	_output(0, "}\n");
+}
+
 static void _generateList(Structure *list)
 {
 	bool doubled = list->type == STRUCTURE_DOUBLE_LINKED_LIST;
@@ -196,6 +244,9 @@ static void _generateStructure(Structure *structure)
 	case STRUCTURE_LINKED_LIST:
 	case STRUCTURE_DOUBLE_LINKED_LIST:
 		_generateList(structure);
+		break;
+	case STRUCTURE_GRAPH:
+		_generateGraph(structure);
 		break;
 	}
 }
