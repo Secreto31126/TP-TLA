@@ -22,13 +22,6 @@ static Logger *_logger = NULL;
  */
 static int _getVariableHash(const char *name);
 /**
- * @brief Retrieve a style variable by its reference in the hash table
- *
- * @param name The name of the variable
- * @return const StyleVariable* The variable if defined, NULL otherwise
- */
-static const StyleVariable *_getStyleVariableByReference(const char *name);
-/**
  * @brief Inserts a style variable in the hash table
  *
  * @param variable The variable to be inserted
@@ -205,7 +198,7 @@ static int _getVariableHash(const char *name)
  * @param name The name of the variable
  * @return StyleVariable* The variable if defined, NULL otherwise
  */
-static const StyleVariable *_getStyleVariableByReference(const char *name)
+const StyleVariable *getStyleVariableByReference(const char *name)
 {
     int hash = _getVariableHash(name);
     struct VariableHashEntry *entry = _variables[hash];
@@ -265,7 +258,7 @@ static bool _addStyleVariableToHash(const StyleVariable *variable)
 
 static bool _validateStyleVariableReference(const char *reference)
 {
-    const StyleVariable *variable = _getStyleVariableByReference(reference);
+    const StyleVariable *variable = getStyleVariableByReference(reference);
     if (variable == NULL)
     {
         logError(_logger, "Style variable not defined");
