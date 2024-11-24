@@ -1,14 +1,5 @@
 List:{
-    A:"{
-        ID: 1
-        desc: heladera
-    }",
-    B:"{
-        ID: 2
-        desc: lámpara
-    }",
-    "{
-        ID: 3
-        desc: computadora
-    }"
+    A:"{\nID: 1\ndesc: heladera\n}",
+    B:"{\nID: 2\ndesc: lámpara\n}",
+    "{\nID: 3\ndesc: computadora\n}"
 };
