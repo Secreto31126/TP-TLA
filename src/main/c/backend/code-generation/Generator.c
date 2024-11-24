@@ -1,5 +1,7 @@
 #include "Generator.h"
 #include <stdbool.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "../domain-specific/Validator.h"
 
@@ -30,6 +32,7 @@ typedef struct properties
 const char _indentationCharacter = ' ';
 const char _indentationSize = 4;
 static Logger *_logger = NULL;
+static FILE * _outputFile = NULL;
 
 void initializeGeneratorModule()
 {
@@ -370,7 +373,33 @@ static void _generateEpilogue(const int value)
  */
 static void _generateProgram(Program *program)
 {
-	_generateStructure(program->structure);
+	int structuresCount = 0;
+	Structure *current = program->structure;
+	char buff[1024];
+	const char *outputDir = "./output";
+
+	if(access(outputDir, F_OK) != 0)
+	{
+		if (mkdir(outputDir, 0755) != 0) {
+            logError(_logger, "Error creating output directory");
+			return;
+		}
+	}
+
+	while(current)
+	{
+		snprintf(buff, sizeof(buff), "%s/output%d.dot", outputDir, structuresCount);
+
+		_outputFile = fopen(buff, "w");
+		if(_outputFile)
+		{
+			_generateStructure(current);
+			fclose(_outputFile);
+		}
+
+		current = current->next;
+		structuresCount++;
+	}
 }
 
 /**
@@ -414,8 +443,8 @@ static void _output(const unsigned int indentationLevel, const char *const forma
 	va_start(arguments, format);
 	char *indentation = _indentation(indentationLevel);
 	char *effectiveFormat = concatenate(2, indentation, format);
-	vfprintf(stdout, effectiveFormat, arguments);
-	fflush(stdout);
+	vfprintf(_outputFile, effectiveFormat, arguments);
+	fflush(_outputFile);
 	free(effectiveFormat);
 	free(indentation);
 	va_end(arguments);
