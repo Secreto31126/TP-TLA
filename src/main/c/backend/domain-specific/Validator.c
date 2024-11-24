@@ -236,7 +236,7 @@ static bool _addStyleVariableToHash(const StyleVariable *variable)
     struct VariableHashEntry *entry = _variables[hash];
 
     int diff;
-    while ((diff = strcmp(variable->name, entry->value->name)) < 0)
+    while (entry && (diff = strcmp(variable->name, entry->value->name)) < 0)
     {
         entry = entry->next;
     }
@@ -250,7 +250,15 @@ static bool _addStyleVariableToHash(const StyleVariable *variable)
     struct VariableHashEntry *newEntry = malloc(sizeof(struct VariableHashEntry));
     newEntry->value = variable;
     newEntry->next = NULL;
-    entry->next = newEntry;
+
+    if (!entry)
+    {
+        _variables[hash] = newEntry;
+    }
+    else
+    {
+        entry->next = newEntry;
+    }
 
     return true;
 }
