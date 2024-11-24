@@ -241,7 +241,7 @@ static bool _addStyleVariableToHash(const StyleVariable *variable)
         entry = entry->next;
     }
 
-    if (diff == 0)
+    if (entry && !diff)
     {
         logError(_logger, "Style variable already defined");
         return false;

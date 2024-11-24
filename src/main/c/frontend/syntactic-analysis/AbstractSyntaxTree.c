@@ -54,7 +54,7 @@ void releaseStyleVariable(StyleVariable *styleVariable)
 
 	releaseStyleVariable(styleVariable->next);
 	releaseStyles(styleVariable->styles);
-	free(styleVariable->name);
+	free(styleVariable->name - 1);
 	free(styleVariable);
 }
 

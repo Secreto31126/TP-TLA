@@ -183,7 +183,7 @@ style_property: BORDER							{ $$ = StyleBorderPropertySemanticAction(); }
 	| SIZE										{ $$ = StyleSizePropertySemanticAction(); }
 	;
 
-set_style_variable: STYLE_VARIABLE[name] COLON styles[s0] SEMICOLON set_style_variable[n0]		{ $$ = StyleVariableSemanticAction($name, $s0, $n0); }
+set_style_variable: STYLE_VARIABLE[name] COLON styles[s0] SEMICOLON set_style_variable[n0]		{ $$ = StyleVariableSemanticAction($name + 1, $s0, $n0); }
 	| %empty																					{ $$ = NULL; }
 	;
 
