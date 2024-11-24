@@ -1,0 +1,12 @@
+$red-border: color(red);
+
+@Customize(A, $red-border fontSize(25))
+@Default(fontSize(14))
+Graph: {
+    A: {
+        "La letra A",
+        B,
+        C: { "Content", A } 
+    },
+    B: { "La letra B", C }
+};

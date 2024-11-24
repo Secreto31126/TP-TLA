@@ -1,0 +1,124 @@
+/*
+$red: color(red-border);
+
+@Customize(A, $red-border fontSize(25))
+@Default(fontSize(14))
+Graph: {
+    A: {
+        "La letra A",
+        B,
+        C: { "La letra C", A }
+    },
+    B: { "La letra B", C }
+};
+*/
+@Customize(ROOT, color(blue))
+@Customize(STRUCT, color(green))
+@Default(fontSize(14))
+Tree: {
+    ROOT: "Program",
+    {
+        STRUCT: "structure (Structure):",
+        {
+            STRUCT: "variables (StyleVariable):",
+            "name: 'red-border'",
+            {
+                STRUCT: "styles (Styles):",
+                "property: PROPERTY_COLOR\nrule: 'red'"
+            }
+        },
+        {
+            STRUCT: "annotations (AnnotationList):",
+            {
+                STRUCT: "value (Annotation):",
+                "target: 'A'",
+                {
+                    STRUCT: "style (Styles):",
+                    "property: PROPERTY_VARIABLE\nrule: 'red-border'"
+                },
+                {
+                    STRUCT: "next (AnnotationList):",
+                    {
+                        STRUCT: "value (Annotation):",
+                        "target: NULL",
+                        {
+                            STRUCT: "style (Styles):",
+                            "property: PROPERTY_SIZE\nrule: '14'"
+                        }
+                    }
+                }
+            }
+        },
+        "type: STRUCTURE_GRAPH",
+        "order: CELL_UNORDERED",
+        {
+            STRUCT: "cells (Cells):",
+            "label: 'A'",
+            {
+                STRUCT: "value (CellValue):",
+                "type: CELL_UNORDERED",
+                {
+                    STRUCT: "cells (Cells):",
+                    {
+                        STRUCT: "value (CellValue):",
+                        "type: CELL_FINAL\nvalue: 'La letra A'"
+                    },
+                    {
+                        STRUCT: "next (Cells):",
+                        "label: 'B'",
+                        {
+                            STRUCT: "next (Cells):",
+                            "label: 'C'",
+                            {
+                                STRUCT: "value (CellValue):",
+                                "type: CELL_UNORDERED",
+                                {
+                                    STRUCT: "cells (Cells):",
+                                    {
+                                        STRUCT: "value (CellValue):",
+                                        "type: CELL_FINAL\nvalue: 'La letra C'"
+                                    },
+                                    {
+                                        STRUCT: "next (Cells):",
+                                        "label: 'A'"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                STRUCT: "next (Cells):",
+                "label: 'B'",
+                {
+                    STRUCT: "value (CellValue):",
+                    "type: CELL_UNORDERED",
+                    {
+                        STRUCT: "cells (Cells):",
+                        {
+                            STRUCT: "value (CellValue):",
+                            "type: CELL_FINAL\nvalue: 'La letra B'"
+                        },
+                        {
+                            STRUCT: "next (Cells):",
+                            "label: 'C'"
+                        }
+                    }
+                }
+            }
+        },
+        {
+            STRUCT: "labels (StructureLabels):",
+            "name: 'A'",
+            {
+                STRUCT: "next (StructureLabels):",
+                "name: 'B'",
+                {
+                    STRUCT: "next (StructureLabels):",
+                    "name: 'C'"
+                }
+            }
+        }
+    }
+};
