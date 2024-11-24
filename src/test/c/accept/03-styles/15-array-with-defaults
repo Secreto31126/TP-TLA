@@ -1,0 +1,10 @@
+// This is actually valid JS code :]
+@Customize(A, border(solid) fontSize(25))
+@Customize(B, color(green) fontSize(10))
+@Default(color(orange) border(dotted))
+Array: [
+    A:"A",
+    B:"B",
+    A:"C",
+    "D"
+];

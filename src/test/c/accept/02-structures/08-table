@@ -1,8 +1,9 @@
 //A table
+@Customize(A, color(red))
 Table: [
     { A: "A1", "B1", "C1" },
     { C: "val2" },
-    { "val3" },
+    { "val3" , "val9", "val10", "val12"},
     { "val4" },
     { "val5" }
 ];

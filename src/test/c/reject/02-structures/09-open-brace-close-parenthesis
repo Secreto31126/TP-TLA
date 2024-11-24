@@ -1,0 +1,7 @@
+Graph:{
+    A: {
+        "La letra A",
+        B: { "some text" },
+        C: { "Content", A, B, C }
+    ]
+};

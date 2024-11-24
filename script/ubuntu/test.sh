@@ -29,7 +29,7 @@ for test in $(find "$accept_folder" -type f); do
 		continue
 	fi
 
-	cat "$test" | build/Compiler >/dev/null 2>&1
+	cat "$test" | build/Compiler --dry-run >/dev/null 2>&1
 	RESULT="$?"
 	if [ "$RESULT" == "0" ]; then
 		echo -e "    ${test#$accept_folder}, ${GREEN}and it does${OFF} (status $RESULT)"
@@ -55,7 +55,7 @@ for test in $(find "$reject_folder" -type f); do
 		continue
 	fi
 
-	cat "$test" | build/Compiler >/dev/null 2>&1
+	cat "$test" | build/Compiler --dry-run >/dev/null 2>&1
 	RESULT="$?"
 	if [ "$RESULT" != "0" ]; then
 		echo -e "    ${test#$reject_folder}, ${GREEN}and it does${OFF} (status $RESULT)"

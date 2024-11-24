@@ -34,7 +34,7 @@
 
 "\""											{ BEGIN(STRING); BeginStringLexemeAction(createLexicalAnalyzerContext()); }
 <STRING>"\""									{ EndStringLexemeAction(createLexicalAnalyzerContext()); BEGIN(INITIAL); }
-<STRING>[^"]*									{ return StringLexemeAction(createLexicalAnalyzerContext()); }
+<STRING>[^"\n]*									{ return StringLexemeAction(createLexicalAnalyzerContext()); }
 
 "//".*"\n"										{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 "#".*"\n"										{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
@@ -68,7 +68,7 @@
 ":"												{ return ColonLexemeAction(createLexicalAnalyzerContext()); }
 ";"												{ return SemiColonLexemeAction(createLexicalAnalyzerContext()); }
 "$"[[:alpha:]][[:alnum:]]*(-[[:alnum:]]+)*		{ return StyleVariableLexemeAction(createLexicalAnalyzerContext()); }
-[[:alpha:]][[:alnum:]]* 						{ return LabelLexemeAction(createLexicalAnalyzerContext()); }
+[[:alnum:]]+             						{ return LabelLexemeAction(createLexicalAnalyzerContext()); }
 
 [[:space:]]+									{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 .												{ return UnknownLexemeAction(createLexicalAnalyzerContext()); }
