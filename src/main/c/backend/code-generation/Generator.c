@@ -100,6 +100,11 @@ static properties _getProperties(const Structure *structure, const Cells *cell)
 	p.fontsize.value = "11";
 	p.style.value = "solid";
 
+	if(structure == NULL)
+	{
+		return p;
+	}
+
 	AnnotationList *annotationList = structure->annotations;
 	while (annotationList)
 	{
@@ -234,35 +239,51 @@ static void _generateList(Structure *list)
 	_output(0, "}\n");
 }
 
-static void _generateRow(Structure *row, int column)
+static void _generateRow(Structure *row, Cells *cell, int column)
 {
 	_output(3, "<tr>\n");
-	properties first = _getProperties(row, row->cells);
 
-	_output(4, "<td color=\"%s\" style=\"%s\"><font point-size=\"%s\">%s</font></td>\n", first.color.value, first.style.value, first.fontsize.value, row->cells->value->value);
+	properties defaults = _getProperties(NULL, NULL);
 
-	Cells *current = row->cells->next;
-	int i = 0;
-	while(current)
-	{
-		i++;
-
-		properties p = _getProperties(row, current);
-
-		_output(4, "<td color=\"%s\" style=\"%s\"><font point-size=\"%s\">%s</font></td>\n", p.color.value, p.style.value, p.fontsize.value, current->value->value);
-		current = current->next;
-
-	}
-
-	Structure property = {0};
-	properties defaults = _getProperties(&property, NULL);
-	while(i < column)
-	{
-		_output(4, "<td color=\"%s\" style=\"%s\"><font point-size=\"%s\"> </font></td>\n",  defaults.color.value, defaults.style.value, defaults.fontsize.value);
-		i++;
+	Cells *current = cell;
+	for(int i = 0;  (column == -1 && current) || i < column; i++){
+		if(current)
+		{
+			properties p = _getProperties(row, current);
+			_output(4, "<td color=\"%s\" style=\"%s\"><font point-size=\"%s\">%s</font></td>\n", p.color.value, p.style.value, p.fontsize.value, current->value->value);
+			current = current->next;
+		}
+		else
+		{
+			_output(4, "<td color=\"%s\" style=\"%s\"><font point-size=\"%s\"> </font></td>\n",  defaults.color.value, defaults.style.value, defaults.fontsize.value);
+		}
 	}
 
 	_output(3, "</tr>\n");
+}
+
+static int _getMaxRows(Structure *structure)
+{
+	int max = 0;
+	Cells *current = structure->cells;
+	while(current)
+	{
+		int i = 0;
+		Cells *cell = current->value->cells;
+		while(cell)
+		{
+			i++;
+			cell = cell->next;
+		}
+		if(i > max)
+		{
+			max = i;
+		}
+		current = current->next;
+	}
+
+	return max;
+
 }
 
 static void _generateArray(Structure *array)
@@ -272,32 +293,33 @@ static void _generateArray(Structure *array)
 	_output(1, "array [label=<\n");
 	_output(2, "<table border=\"1\" cellborder=\"1\" cellpadding=\"5\" cellspacing=\"2\">\n");
 
-	_generateRow(array, 0);
+	_generateRow(array, array->cells, -1);
 
 	_output(2, "</table>\n");
 	_output(1, ">]\n");
-
 	_output(0, "}\n");
 
 }
 
 
-static void _generateTable(Structure *structure)
+static void _generateTable(Structure *table)
 {
 	_output(0, "digraph Table {\n");
 	_output(1, "node [shape=plaintext]\n");
 	_output(1, "table [label=<\n");
 	_output(1, "<table border=\"1\" cellborder=\"1\" cellpadding=\"5\" cellspacing=\"2\">\n");
 
+	int max = _getMaxRows(table);
 
-	while(structure)
+	Cells *current = table->cells;
+	while(current)
 	{
-		_generateRow(structure,3);
-		structure = structure->next;
+		_generateRow(table,current->value->cells, max);
+		current = current->next;
 	}
+
 	_output(2, "</table>\n");
 	_output(1, ">]\n");
-
 	_output(0, "}\n");
 }
 
