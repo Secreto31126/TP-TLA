@@ -30,41 +30,39 @@ static void _generatePrologue(void);
 static char *_indentation(const unsigned int indentationLevel);
 static void _output(const unsigned int indentationLevel, const char *const format, ...);
 
-
-
 static void _getStyleProperties(const Styles *styles, char **color, char **fontsize, char **style, bool *colorModified, bool *fontsizeModified, bool *styleModified, bool override)
 {
 	const Styles *current = styles;
-	while(current)
+	while (current)
 	{
 		switch (current->property)
 		{
-			case PROPERTY_COLOR:
-				if(override || !*colorModified)
-					*color = current->rule;
-				*colorModified = true;
-				break;
-			case PROPERTY_SIZE:
-				if(override || !*fontsizeModified)
-					*fontsize = current->rule;
-				*fontsizeModified = true;
-				break;
-			case PROPERTY_BORDER:
-				if(override || !*styleModified)
-					*style = current->rule;
-				*styleModified = true;
-				break;
-			case PROPERTY_VARIABLE:
-				const StyleVariable *variable = getStyleVariableByReference(current->rule);
-				if(variable)
-					_getStyleProperties(variable->styles, color, fontsize, style, colorModified, fontsizeModified, styleModified, override);
+		case PROPERTY_COLOR:
+			if (override || !*colorModified)
+				*color = current->rule;
+			*colorModified = true;
+			break;
+		case PROPERTY_SIZE:
+			if (override || !*fontsizeModified)
+				*fontsize = current->rule;
+			*fontsizeModified = true;
+			break;
+		case PROPERTY_BORDER:
+			if (override || !*styleModified)
+				*style = current->rule;
+			*styleModified = true;
+			break;
+		case PROPERTY_VARIABLE:
+			const StyleVariable *variable = getStyleVariableByReference(current->rule);
+			if (variable)
+				_getStyleProperties(variable->styles, color, fontsize, style, colorModified, fontsizeModified, styleModified, override);
 		}
 
 		current = current->next;
 	}
 }
 
-static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int * n)
+static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int *n)
 {
 	const unsigned int id = *n;
 	(*n)++;
@@ -77,41 +75,40 @@ static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int * 
 	bool styleModified = false;
 
 	AnnotationList *annotationList = tree->annotations;
-	while(annotationList)
+	while (annotationList)
 	{
-		if(!annotationList->value->target)
+		if (!annotationList->value->target)
 		{
 			_getStyleProperties(annotationList->value->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified, false);
 		}
-		else if(treeCell->label)
+		else if (treeCell->label)
 		{
 			Annotation *annotation = annotationList->value;
 
-			if(strcmp(annotation->target, treeCell->label) == 0)
+			if (strcmp(annotation->target, treeCell->label) == 0)
 			{
 				_getStyleProperties(annotation->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified, true);
 			}
-
-			annotationList = annotationList->next;
 		}
+
+		annotationList = annotationList->next;
 	}
 
-	_output(4, "node%d [label=\"%s\" color=%s fontsize=%s style=%s]\n", *n, treeCell->value->value, color, fontsize, style);
+	_output(1, "node%d [label=\"%s\" color=%s fontsize=%s style=%s]\n", id, treeCell->value->value, color, fontsize, style);
+
 	Cells *current = treeCell->next;
-	while(current)
+	while (current)
 	{
-		_output(4, "node%d -> node%d\n", id, *n);
+		_output(1, "node%d -> node%d\n", id, *n);
 		_generateTreeNodes(tree, current, n);
 		current = current->next;
-
 	}
 }
 
 static void _generateTree(Structure *tree)
 {
-	_output(0, "digraph Tree {\n");
-
 	unsigned int n = 0;
+	_output(0, "digraph Tree {\n");
 	_generateTreeNodes(tree, tree->cells, &n);
 	_output(0, "}\n");
 }
@@ -124,8 +121,6 @@ static void _generateStructure(Structure *structure)
 		_generateTree(structure);
 		break;
 	}
-
-
 }
 
 /**
@@ -134,7 +129,6 @@ static void _generateStructure(Structure *structure)
  */
 static void _generateEpilogue(const int value)
 {
-	_output(0, "}");
 }
 
 /**
