@@ -13,6 +13,7 @@
 	char *string;
 	Token token;
 	StructureType type;
+	PropertyType property;
 
 	/** Non-terminals. */
 
@@ -91,6 +92,10 @@
 %token <token> DIRECTED_GRAPH
 %token <token> TABLE
 
+%token <token> BORDER
+%token <token> COLOR
+%token <token> SIZE
+
 %token <token> UNKNOWN
 
 /** Non-terminals. */
@@ -103,6 +108,7 @@
 
 %type <styles> styles
 %type <style_variable> set_style_variable
+%type <property> style_property
 
 %type <annotation> default_annotation
 %type <annotation> customize_annotation
@@ -166,10 +172,15 @@ default_annotation: DEFAULT_ANNOTATION OPEN_PARENTHESIS styles[s0] CLOSE_PARENTH
 customize_annotation: CUSTOMIZE_ANNOTATION OPEN_PARENTHESIS LABEL[t0] COMMA styles[s0] CLOSE_PARENTHESIS	{ $$ = AnnotationStyleSemanticAction($t0, $s0); }
 	;
 
-styles: LABEL[p0] OPEN_PARENTHESIS LABEL[r0] CLOSE_PARENTHESIS				{ $$ = StylesSemanticAction($p0, $r0, NULL); }
-	| LABEL[p1] OPEN_PARENTHESIS LABEL[r1] CLOSE_PARENTHESIS styles[n1]		{ $$ = StylesSemanticAction($p1, $r1, $n1); }
-	| STYLE_VARIABLE[v2]													{ $$ = StylesSemanticAction("$", $v2 + 1, NULL); }
-	| STYLE_VARIABLE[v3] styles[n3]											{ $$ = StylesSemanticAction("$", $v3 + 1, $n3); }
+styles: style_property[p0] OPEN_PARENTHESIS LABEL[r0] CLOSE_PARENTHESIS				{ $$ = StylesSemanticAction($p0, $r0, NULL); }
+	| style_property[p1] OPEN_PARENTHESIS LABEL[r1] CLOSE_PARENTHESIS styles[n1]	{ $$ = StylesSemanticAction($p1, $r1, $n1); }
+	| STYLE_VARIABLE[v2]															{ $$ = StylesSemanticAction('$', $v2 + 1, NULL); }
+	| STYLE_VARIABLE[v3] styles[n3]													{ $$ = StylesSemanticAction('$', $v3 + 1, $n3); }
+	;
+
+style_property: BORDER							{ $$ = StyleBorderPropertySemanticAction(); }
+	| COLOR										{ $$ = StyleColorPropertySemanticAction(); }
+	| SIZE										{ $$ = StyleSizePropertySemanticAction(); }
 	;
 
 set_style_variable: STYLE_VARIABLE[name] COLON styles[s0] SEMICOLON set_style_variable[n0]		{ $$ = StyleVariableSemanticAction($name, $s0, $n0); }

@@ -38,6 +38,7 @@ Token SemiColonLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
 
 Token StructureTypeLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext, Token token);
 Token ModifierLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext, Token token);
+Token StylePropertyLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext, Token token);
 Token StyleVariableLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
 Token LabelLexemeAction(LexicalAnalyzerContext *lexicalAnalyzerContext);
 

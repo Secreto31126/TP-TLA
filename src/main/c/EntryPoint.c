@@ -24,6 +24,7 @@ const int main(const int count, const char **arguments)
 	initializeAbstractSyntaxTreeModule();
 	initializeCalculatorModule();
 	initializeGeneratorModule();
+	initializeValidatorModule();
 
 	// Logs the arguments of the application.
 	for (int k = 0; k < count; ++k)
@@ -56,8 +57,8 @@ const int main(const int count, const char **arguments)
 		// 	logError(logger, "The computation phase rejects the input program.");
 		// 	compilationStatus = FAILED;
 		// }
-	// ...end of the Backend. -----------------------------------------------------------------
-	// ----------------------------------------------------------------------------------------
+		// ...end of the Backend. -----------------------------------------------------------------
+		// ----------------------------------------------------------------------------------------
 
 		logDebugging(logger, "Releasing AST resources...");
 		releaseProgram(program);
@@ -69,6 +70,7 @@ const int main(const int count, const char **arguments)
 	}
 
 	logDebugging(logger, "Releasing modules resources...");
+	shutdownValidatorModule();
 	shutdownGeneratorModule();
 	shutdownCalculatorModule();
 	shutdownAbstractSyntaxTreeModule();

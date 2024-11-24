@@ -31,13 +31,12 @@ void releaseStyles(Styles *styles)
 	releaseStyles(styles->next);
 
 	// This is unfortunate colateral damage from the Bison design.
-	if (*styles->property == '$')
+	if (styles->property == PROPERTY_VARIABLE)
 	{
 		free(styles->rule - 1);
 	}
 	else
 	{
-		free(styles->property);
 		free(styles->rule);
 	}
 
@@ -123,6 +122,19 @@ void releaseCells(Cells *cells)
 	free(cells);
 }
 
+void releaseLabels(StructureLabels *labels)
+{
+	if (!labels)
+	{
+		return;
+	}
+
+	logDebugging(_logger, "Executing destructor: %s", __FUNCTION__);
+
+	releaseLabels(labels->next);
+	free(labels);
+}
+
 void releaseStructure(Structure *structure)
 {
 	if (!structure)
@@ -136,6 +148,7 @@ void releaseStructure(Structure *structure)
 	releaseStyleVariable(structure->variables);
 	releaseAnnotationList(structure->annotations);
 	releaseCells(structure->cells);
+	releaseLabels(structure->labels);
 	free(structure);
 }
 

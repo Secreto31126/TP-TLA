@@ -85,9 +85,17 @@ typedef struct StyleVariable
 	struct StyleVariable *next;
 } StyleVariable;
 
+typedef enum PropertyType
+{
+	PROPERTY_BORDER = 0,
+	PROPERTY_COLOR,
+	PROPERTY_SIZE,
+	PROPERTY_VARIABLE = '$'
+} PropertyType;
+
 typedef struct Styles
 {
-	char *property;
+	PropertyType property;
 	char *rule;
 	struct Styles *next;
 } Styles;
@@ -133,6 +141,12 @@ typedef enum StructureType
 	STRUCTURE_TABLE
 } StructureType;
 
+typedef struct StructureLabels
+{
+	const char *name;
+	struct StructureLabels *next;
+} StructureLabels;
+
 typedef struct Structure
 {
 	StyleVariable *variables;
@@ -140,6 +154,7 @@ typedef struct Structure
 	StructureType type;
 	CellType order;
 	Cells *cells;
+	StructureLabels *labels;
 	struct Structure *next;
 } Structure;
 
