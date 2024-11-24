@@ -26,9 +26,14 @@ const int main(const int count, const char **arguments)
 	initializeGeneratorModule();
 	initializeValidatorModule();
 
+	bool dryRun = false;
 	// Logs the arguments of the application.
 	for (int k = 0; k < count; ++k)
 	{
+		if(strcmp(arguments[k], "--dry-run") == 0)
+		{
+			dryRun = true;
+		}
 		logDebugging(logger, "Argument %d: \"%s\"", k, arguments[k]);
 	}
 
@@ -54,7 +59,7 @@ const int main(const int count, const char **arguments)
 		}
 		else
 		{
-			generate(&compilerState);
+			generate(&compilerState, dryRun);
 		}
 		// ...end of the Backend. -----------------------------------------------------------------
 		// ----------------------------------------------------------------------------------------

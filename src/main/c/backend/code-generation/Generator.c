@@ -50,7 +50,7 @@ void shutdownGeneratorModule()
 /** PRIVATE FUNCTIONS */
 
 static void _generateEpilogue(const int value);
-static void _generateProgram(Program *program);
+static void _generateProgram(Program *program, bool dryRun);
 static void _generatePrologue(void);
 static char *_indentation(const unsigned int indentationLevel);
 static void _output(const unsigned int indentationLevel, const char *const format, ...);
@@ -371,14 +371,14 @@ static void _generateEpilogue(const int value)
 /**
  * Generates the output of the program.
  */
-static void _generateProgram(Program *program)
+static void _generateProgram(Program *program, bool dryRun)
 {
 	int structuresCount = 0;
 	Structure *current = program->structure;
 	char buff[1024];
 	const char *outputDir = "./output";
 
-	if(access(outputDir, F_OK) != 0)
+	if(!dryRun && access(outputDir, F_OK) != 0)
 	{
 		if (mkdir(outputDir, 0755) != 0) {
             logError(_logger, "Error creating output directory");
@@ -388,13 +388,18 @@ static void _generateProgram(Program *program)
 
 	while(current)
 	{
-		snprintf(buff, sizeof(buff), "%s/output%d.dot", outputDir, structuresCount);
-
-		_outputFile = fopen(buff, "w");
+		if(!dryRun)
+		{
+			snprintf(buff, sizeof(buff), "%s/output%d.dot", outputDir, structuresCount);
+			_outputFile = fopen(buff, "w");
+		}
 		if(_outputFile)
 		{
 			_generateStructure(current);
-			fclose(_outputFile);
+			if(!dryRun)
+			{
+				fclose(_outputFile);
+			}
 		}
 
 		current = current->next;
@@ -452,11 +457,12 @@ static void _output(const unsigned int indentationLevel, const char *const forma
 
 /** PUBLIC FUNCTIONS */
 
-void generate(CompilerState *compilerState)
+void generate(CompilerState *compilerState, bool dryRun)
 {
+	_outputFile = stdout;
 	logDebugging(_logger, "Generating final output...");
 	_generatePrologue();
-	_generateProgram(compilerState->abstractSyntaxtTree);
+	_generateProgram(compilerState->abstractSyntaxtTree, dryRun);
 	_generateEpilogue(compilerState->value);
 	logDebugging(_logger, "Generation is done.");
 }
