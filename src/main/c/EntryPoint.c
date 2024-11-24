@@ -46,17 +46,13 @@ const int main(const int count, const char **arguments)
 		logDebugging(logger, "Computing expression value...");
 		Program *program = compilerState.abstractSyntaxtTree;
 
-		validateStructures(program->structure);
+		bool validationResult = validateStructures(program->structure);
 		generate(&compilerState);
-		// if (validationResult)
-		// {
-		// 	compilerState.value = computationResult.value;
-		// }
-		// else
-		// {
-		// 	logError(logger, "The computation phase rejects the input program.");
-		// 	compilationStatus = FAILED;
-		// }
+		if (!validationResult)
+		{
+			logError(logger, "The computation phase rejects the input program.");
+			compilationStatus = FAILED;
+		}
 		// ...end of the Backend. -----------------------------------------------------------------
 		// ----------------------------------------------------------------------------------------
 

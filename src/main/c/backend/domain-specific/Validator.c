@@ -108,6 +108,22 @@ static bool _validateListCell(const Cells *cell);
  * @return false The structure is invalid
  */
 static bool _validateList(const Structure *list);
+/**
+ * @brief Validates the content of a graph structure
+ *
+ * @param graph The structure to be validated
+ * @return true The structure is valid
+ * @return false The structure is invalid
+ */
+static bool _validateGraph(const Structure *graph);
+/**
+ * @brief Validates the content of a table structure
+ *
+ * @param graph The structure to be validated
+ * @return true The structure is valid
+ * @return false The structure is invalid
+ */
+static bool _validateTable(const Structure *table);
 
 typedef bool (*structureValidators)(const Structure *);
 static structureValidators validators[TOTAL_STRUCTURES];
@@ -117,7 +133,7 @@ struct VariableHashEntry
     const StyleVariable *value;
     struct VariableHashEntry *next;
 };
-static struct VariableHashEntry _variables[HASH_SIZE];
+static struct VariableHashEntry *_variables[HASH_SIZE] = {NULL};
 
 void initializeValidatorModule()
 {
@@ -128,6 +144,9 @@ void initializeValidatorModule()
     validators[STRUCTURE_LIST] = _validateList;
     validators[STRUCTURE_LINKED_LIST] = _validateList;
     validators[STRUCTURE_DOUBLE_LINKED_LIST] = _validateList;
+    validators[STRUCTURE_GRAPH] = _validateGraph;
+    validators[STRUCTURE_DIRECTED_GRAPH] = _validateGraph;
+    validators[STRUCTURE_TABLE] = _validateTable;
 }
 
 void shutdownValidatorModule()
@@ -139,7 +158,7 @@ void shutdownValidatorModule()
 
     for (int i = 0; i < HASH_SIZE; i++)
     {
-        struct VariableHashEntry *entry = _variables[i].next;
+        struct VariableHashEntry *entry = _variables[i];
         while (entry)
         {
             struct VariableHashEntry *next = entry->next;
@@ -189,7 +208,7 @@ static int _getVariableHash(const char *name)
 static const StyleVariable *_getStyleVariableByReference(const char *name)
 {
     int hash = _getVariableHash(name);
-    struct VariableHashEntry *entry = &_variables[hash];
+    struct VariableHashEntry *entry = _variables[hash];
 
     while (entry)
     {
@@ -214,7 +233,7 @@ static const StyleVariable *_getStyleVariableByReference(const char *name)
 static bool _addStyleVariableToHash(const StyleVariable *variable)
 {
     int hash = _getVariableHash(variable->name);
-    struct VariableHashEntry *entry = &_variables[hash];
+    struct VariableHashEntry *entry = _variables[hash];
 
     int diff;
     while ((diff = strcmp(variable->name, entry->value->name)) < 0)
@@ -415,6 +434,7 @@ static bool _validateLabels(Structure *structure)
     }
 
     structure->labels = left;
+    return true;
 }
 
 static bool _validateArrayCells(const Cells *cell)
@@ -422,8 +442,9 @@ static bool _validateArrayCells(const Cells *cell)
     const Cells *current = cell;
     while (current)
     {
-        if (current->value->type != CELL_FINAL)
+        if (!current->value || current->value->type != CELL_FINAL)
         {
+            logError(_logger, "Array cell is not final");
             return false;
         }
 
@@ -456,7 +477,7 @@ static bool _validateTreeCell(const Cells *cell)
         return true;
     }
 
-    if (cell->value->type != CELL_FINAL)
+    if (!cell->value || cell->value->type != CELL_FINAL)
     {
         logError(_logger, "First cell value is not final");
         return false;
@@ -466,6 +487,12 @@ static bool _validateTreeCell(const Cells *cell)
     Cells *brother = cell->next;
     while (brother && valid)
     {
+        if (!brother->value)
+        {
+            logError(_logger, "Brother cell has no value");
+            return false;
+        }
+
         if (brother->value->type != CELL_FINAL)
         {
             valid = _validateTreeCell(brother->value->cells);
@@ -498,8 +525,9 @@ static bool _validateListCell(const Cells *cell)
     const Cells *current = cell;
     while (current)
     {
-        if (current->value->type != CELL_FINAL)
+        if (!current->value || current->value->type != CELL_FINAL)
         {
+            logError(_logger, "List cell is not final");
             return false;
         }
 
@@ -523,6 +551,100 @@ static bool _validateList(const Structure *list)
     }
 
     return _validateListCell(list->cells);
+}
+
+static bool _validateGraphCells(const Cells *cell, bool root)
+{
+    if (cell == NULL)
+    {
+        return true;
+    }
+
+    if (!root && (!cell->value || cell->value->type != CELL_FINAL))
+    {
+        logError(_logger, "Graph cell is not final");
+        return false;
+    }
+
+    bool valid = true;
+    const Cells *curr = cell;
+    while (curr && valid)
+    {
+        if (curr->value && curr->value->type != CELL_FINAL)
+        {
+            valid = _validateGraphCells(curr->value->cells, false);
+        }
+
+        curr = curr->next;
+    }
+
+    return valid;
+}
+
+static bool _validateGraph(const Structure *graph)
+{
+    if (graph == NULL)
+    {
+        return true;
+    }
+
+    if (graph->cells == NULL)
+    {
+        logError(_logger, "Graph has no cells");
+        return false;
+    }
+
+    return _validateGraphCells(graph->cells, true);
+}
+
+static bool _validateTableCells(const Cells *cell)
+{
+    if (cell == NULL)
+    {
+        return true;
+    }
+
+    const Cells *outer = cell;
+    while (outer)
+    {
+        if (!outer->value || outer->value->type == CELL_FINAL)
+        {
+            logError(_logger, "Table outer cell is final");
+            return false;
+        }
+
+        const Cells *inner = outer->value->cells;
+        while (inner)
+        {
+            if (!inner->value || inner->value->type != CELL_FINAL)
+            {
+                logError(_logger, "Table inner cell is not final");
+                return false;
+            }
+
+            inner = inner->next;
+        }
+
+        outer = outer->next;
+    }
+
+    return true;
+}
+
+static bool _validateTable(const Structure *table)
+{
+    if (table == NULL)
+    {
+        return true;
+    }
+
+    if (table->cells == NULL)
+    {
+        logError(_logger, "Table has no cells");
+        return false;
+    }
+
+    return _validateTableCells(table->cells);
 }
 
 /* PUBLIC FUNCTIONS */
