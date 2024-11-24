@@ -30,7 +30,7 @@ static void _generatePrologue(void);
 static char *_indentation(const unsigned int indentationLevel);
 static void _output(const unsigned int indentationLevel, const char *const format, ...);
 
-static void _getStyleProperties(const Styles *styles, char **color, char **fontsize, char **style, bool *colorModified, bool *fontsizeModified, bool *styleModified, bool override)
+static void _getStyleProperties(const Styles *styles, char **color, char **fontsize, char **style, bool *colorModified, bool *fontsizeModified, bool *styleModified, bool overrideColor, bool overrideFontsize, bool overrideStyle)
 {
 	const Styles *current = styles;
 	while (current)
@@ -38,24 +38,33 @@ static void _getStyleProperties(const Styles *styles, char **color, char **fonts
 		switch (current->property)
 		{
 		case PROPERTY_COLOR:
-			if (override || !*colorModified)
+			if (overrideColor || !*colorModified)
+			{
 				*color = current->rule;
+				overrideColor = true;
+			}
 			*colorModified = true;
 			break;
 		case PROPERTY_SIZE:
-			if (override || !*fontsizeModified)
+			if (overrideFontsize || !*fontsizeModified)
+			{
 				*fontsize = current->rule;
+				overrideFontsize = true;
+			}
 			*fontsizeModified = true;
 			break;
 		case PROPERTY_BORDER:
-			if (override || !*styleModified)
+			if (overrideStyle || !*styleModified)
+			{
 				*style = current->rule;
+				overrideStyle = true;
+			}
 			*styleModified = true;
 			break;
 		case PROPERTY_VARIABLE:
 			const StyleVariable *variable = getStyleVariableByReference(current->rule);
 			if (variable)
-				_getStyleProperties(variable->styles, color, fontsize, style, colorModified, fontsizeModified, styleModified, override);
+				_getStyleProperties(variable->styles, color, fontsize, style, colorModified, fontsizeModified, styleModified, overrideColor, overrideFontsize, overrideStyle);
 		}
 
 		current = current->next;
@@ -79,7 +88,7 @@ static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int *n
 	{
 		if (!annotationList->value->target)
 		{
-			_getStyleProperties(annotationList->value->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified, false);
+			_getStyleProperties(annotationList->value->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified, false, false, false);
 		}
 		else if (treeCell->label)
 		{
@@ -87,7 +96,7 @@ static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int *n
 
 			if (strcmp(annotation->target, treeCell->label) == 0)
 			{
-				_getStyleProperties(annotation->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified, true);
+				_getStyleProperties(annotation->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified, true, true, true);
 			}
 		}
 

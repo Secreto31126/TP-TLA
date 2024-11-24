@@ -1,6 +1,6 @@
 //Tree with many nodes
 @Customize(BLACK, color(red) fontSize(30))
-@Default(color(blue))
+@Default(color(blue) color(green))
 Tree:{
     RED:"1",
     BLACK:"2",
