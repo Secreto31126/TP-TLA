@@ -3,6 +3,9 @@
 
 #include "../domain-specific/Validator.h"
 
+#define _getDefaultProperties(styles, c, f, s, cm, fm, sm) _getStyleProperties(styles, c, f, s, cm, fm, sm, false, false, false)
+#define _getCustomProperties(styles, c, f, s, cm, fm, sm) _getStyleProperties(styles, c, f, s, cm, fm, sm, true, true, true)
+
 /* MODULE INTERNAL STATE */
 
 const char _indentationCharacter = ' ';
@@ -88,7 +91,7 @@ static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int *n
 	{
 		if (!annotationList->value->target)
 		{
-			_getStyleProperties(annotationList->value->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified, false, false, false);
+			_getDefaultProperties(annotationList->value->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified);
 		}
 		else if (treeCell->label)
 		{
@@ -96,7 +99,7 @@ static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int *n
 
 			if (strcmp(annotation->target, treeCell->label) == 0)
 			{
-				_getStyleProperties(annotation->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified, true, true, true);
+				_getCustomProperties(annotation->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified);
 			}
 		}
 
