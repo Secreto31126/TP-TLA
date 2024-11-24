@@ -2,7 +2,6 @@
 
 #define TOTAL_STRUCTURES 8
 // A variable name can only have lower or upper case letters, numbers and -
-// 26 + 26 + 10 + 1 = 62
 #define HASH_BASE 62
 // The number of the name chars to be hashed
 #define HASH_LENGTH 3

@@ -1,5 +1,4 @@
 #include "backend/code-generation/Generator.h"
-#include "backend/domain-specific/Calculator.h"
 #include "backend/domain-specific/Validator.h"
 #include "frontend/lexical-analysis/FlexActions.h"
 #include "frontend/syntactic-analysis/AbstractSyntaxTree.h"
@@ -22,7 +21,6 @@ const int main(const int count, const char **arguments)
 	initializeBisonActionsModule();
 	initializeSyntacticAnalyzerModule();
 	initializeAbstractSyntaxTreeModule();
-	initializeCalculatorModule();
 	initializeGeneratorModule();
 	initializeValidatorModule();
 
@@ -76,7 +74,6 @@ const int main(const int count, const char **arguments)
 	logDebugging(logger, "Releasing modules resources...");
 	shutdownValidatorModule();
 	shutdownGeneratorModule();
-	shutdownCalculatorModule();
 	shutdownAbstractSyntaxTreeModule();
 	shutdownSyntacticAnalyzerModule();
 	shutdownBisonActionsModule();
