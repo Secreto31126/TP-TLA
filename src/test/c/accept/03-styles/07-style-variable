@@ -1,4 +1,4 @@
-$style: border(double) color(red);
+$style: border(dotted) color(red);
 @Default($style)
 Array:[
     "elemento"

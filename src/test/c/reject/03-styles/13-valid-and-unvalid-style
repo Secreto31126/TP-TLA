@@ -1,4 +1,4 @@
-$style: ratio(4) border(double);
+$style: ratio(4) border(solid);
 Array:[
     "elemento"
 ];

@@ -1,4 +1,4 @@
-$illegal-kebab-: border(double);
+$illegal-kebab-: fontsize(12);
 
 @Customize(A, $illegal-kebab-)
 Array:[

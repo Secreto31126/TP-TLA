@@ -1,4 +1,4 @@
-@Default(border(red))
+@Default(color(red))
 Array:[
     A:"primero",
     "otro elemento"

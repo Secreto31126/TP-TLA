@@ -1,4 +1,4 @@
 Array:[
     "A"
 ];
-@Customize(A,border(red))
+@Customize(A,color(red))
