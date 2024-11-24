@@ -7,6 +7,8 @@
 #include "../../shared/Logger.h"
 #include "../../shared/Type.h"
 
-bool validateStructures(const Structure *structure);
+bool validateStructures(Structure *structure);
+void initializeValidatorModule();
+void shutdownValidatorModule();
 
 #endif

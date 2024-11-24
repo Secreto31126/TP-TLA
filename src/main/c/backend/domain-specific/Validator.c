@@ -109,7 +109,6 @@ static bool _validateListCell(const Cells *cell);
  */
 static bool _validateList(const Structure *list);
 
-
 typedef bool (*structureValidators)(const Structure *);
 static structureValidators validators[TOTAL_STRUCTURES];
 
@@ -122,12 +121,13 @@ static struct VariableHashEntry _variables[HASH_SIZE];
 
 void initializeValidatorModule()
 {
-    _logger = createLogger("Calculator");
+    _logger = createLogger("Validator");
 
     validators[STRUCTURE_TREE] = _validateTree;
     validators[STRUCTURE_ARRAY] = _validateArray;
     validators[STRUCTURE_LIST] = _validateList;
-
+    validators[STRUCTURE_LINKED_LIST] = _validateList;
+    validators[STRUCTURE_DOUBLE_LINKED_LIST] = _validateList;
 }
 
 void shutdownValidatorModule()
@@ -139,7 +139,7 @@ void shutdownValidatorModule()
 
     for (int i = 0; i < HASH_SIZE; i++)
     {
-        struct VariableHashEntry *entry = &_variables[i];
+        struct VariableHashEntry *entry = _variables[i].next;
         while (entry)
         {
             struct VariableHashEntry *next = entry->next;
@@ -257,7 +257,7 @@ static bool _validateStyles(const Styles *styles)
     const Styles *current = styles;
     while (current)
     {
-        if (*styles->property == '$' && !_validateStyleVariableReference(styles->rule))
+        if (styles->property == PROPERTY_VARIABLE && !_validateStyleVariableReference(styles->rule))
         {
             logError(_logger, "Invalid style variable");
             return false;
@@ -291,7 +291,7 @@ static bool _validateStyleVariables(const StyleVariable *variables)
     return _validateStyleVariables(variables->next);
 }
 
-static bool _validateAnnotations(const AnnotationList* annotations)
+static bool _validateAnnotations(const AnnotationList *annotations)
 {
     if (annotations == NULL)
     {
@@ -305,7 +305,116 @@ static bool _validateAnnotations(const AnnotationList* annotations)
     }
 
     return _validateAnnotations(annotations->next);
+}
 
+static StructureLabels *_appendToLabels(StructureLabels *labels, const char *name)
+{
+    if (labels == NULL)
+    {
+        StructureLabels *newLabel = malloc(sizeof(StructureLabels));
+        newLabel->name = name;
+        newLabel->next = NULL;
+        return newLabel;
+    }
+
+    int diff = strcmp(labels->name, name);
+    if (diff == 0)
+    {
+        return labels;
+    }
+
+    if (diff > 0)
+    {
+        StructureLabels *newLabel = malloc(sizeof(StructureLabels));
+        newLabel->name = name;
+        newLabel->next = labels;
+        return newLabel;
+    }
+
+    labels->next = _appendToLabels(labels->next, name);
+    return labels;
+}
+
+static void _retrieveCellLabels(const Cells *cell, StructureLabels **left, StructureLabels **right)
+{
+    if (cell == NULL)
+    {
+        return;
+    }
+
+    if (!cell->value)
+    {
+        *right = _appendToLabels(*right, cell->label);
+    }
+    else
+    {
+        if (cell->label)
+        {
+            *left = _appendToLabels(*left, cell->label);
+        }
+
+        if (cell->value->type != CELL_FINAL)
+        {
+            _retrieveCellLabels(cell->value->cells, left, right);
+        }
+    }
+
+    _retrieveCellLabels(cell->next, left, right);
+}
+
+static bool _freeStructureLabels(StructureLabels *labels)
+{
+    if (labels == NULL)
+    {
+        return true;
+    }
+
+    StructureLabels *next = labels->next;
+    free(labels);
+    return _freeStructureLabels(next);
+}
+
+static bool _validateLabels(Structure *structure)
+{
+    StructureLabels *left = NULL;
+    StructureLabels *right = NULL;
+
+    _retrieveCellLabels(structure->cells, &left, &right);
+
+    // Validate all right labels are in the left
+    StructureLabels *current_right = right;
+    StructureLabels *current_left = left;
+
+    while (current_right)
+    {
+        bool found = false;
+        while (current_left && !found)
+        {
+            int diff = strcmp(current_right->name, current_left->name);
+
+            if (!diff)
+            {
+                found = true;
+            }
+
+            if (diff < 0)
+            {
+                break;
+            }
+
+            current_left = current_left->next;
+        }
+
+        if (!found)
+        {
+            logError(_logger, "Label not found in the left set");
+            return false;
+        }
+
+        current_right = current_right->next;
+    }
+
+    structure->labels = left;
 }
 
 static bool _validateArrayCells(const Cells *cell)
@@ -339,7 +448,6 @@ static bool _validateArray(const Structure *array)
 
     return _validateArrayCells(array->cells);
 }
-
 
 static bool _validateTreeCell(const Cells *cell)
 {
@@ -419,9 +527,7 @@ static bool _validateList(const Structure *list)
 
 /* PUBLIC FUNCTIONS */
 
-
-
-bool validateStructures(const Structure *structure)
+bool validateStructures(Structure *structure)
 {
     if (structure == NULL)
     {
@@ -431,8 +537,8 @@ bool validateStructures(const Structure *structure)
     bool result;
     result = _validateStyleVariables(structure->variables);
     result = result && _validateAnnotations(structure->annotations);
+    result = result && _validateLabels(structure);
     result = result && validators[structure->type](structure);
-
 
     if (!result)
     {
