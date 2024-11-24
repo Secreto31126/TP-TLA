@@ -68,7 +68,7 @@
 ":"												{ return ColonLexemeAction(createLexicalAnalyzerContext()); }
 ";"												{ return SemiColonLexemeAction(createLexicalAnalyzerContext()); }
 "$"[[:alpha:]][[:alnum:]]*(-[[:alnum:]]+)*		{ return StyleVariableLexemeAction(createLexicalAnalyzerContext()); }
-[[:alpha:]][[:alnum:]]* 						{ return LabelLexemeAction(createLexicalAnalyzerContext()); }
+[[:alnum:]]+             						{ return LabelLexemeAction(createLexicalAnalyzerContext()); }
 
 [[:space:]]+									{ IgnoredLexemeAction(createLexicalAnalyzerContext()); }
 .												{ return UnknownLexemeAction(createLexicalAnalyzerContext()); }
