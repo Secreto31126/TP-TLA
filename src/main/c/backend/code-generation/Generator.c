@@ -235,6 +235,11 @@ static void _generateList(Structure *list)
 
 static void _generateStructure(Structure *structure)
 {
+	if (!structure)
+	{
+		return;
+	}
+
 	switch (structure->type)
 	{
 	case STRUCTURE_TREE:
