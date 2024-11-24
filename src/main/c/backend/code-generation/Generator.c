@@ -3,8 +3,15 @@
 
 #include "../domain-specific/Validator.h"
 
-#define _getDefaultProperties(styles, c, f, s, cm, fm, sm) _getStyleProperties(styles, c, f, s, cm, fm, sm, false, false, false)
-#define _getCustomProperties(styles, c, f, s, cm, fm, sm) _getStyleProperties(styles, c, f, s, cm, fm, sm, true, true, true)
+#define _getDefaultProperties(styles, p, cm, fm, sm) _getStyleProperties(styles, p, cm, fm, sm, false, false, false)
+#define _getCustomProperties(styles, p, cm, fm, sm) _getStyleProperties(styles, p, cm, fm, sm, true, true, true)
+
+typedef struct properties
+{
+	char *color;
+	char *fontsize;
+	char *style;
+} properties;
 
 /* MODULE INTERNAL STATE */
 
@@ -33,7 +40,7 @@ static void _generatePrologue(void);
 static char *_indentation(const unsigned int indentationLevel);
 static void _output(const unsigned int indentationLevel, const char *const format, ...);
 
-static void _getStyleProperties(const Styles *styles, char **color, char **fontsize, char **style, bool *colorModified, bool *fontsizeModified, bool *styleModified, bool overrideColor, bool overrideFontsize, bool overrideStyle)
+static void _getStyleProperties(const Styles *styles, properties *p, bool *colorModified, bool *fontsizeModified, bool *styleModified, bool overrideColor, bool overrideFontsize, bool overrideStyle)
 {
 	const Styles *current = styles;
 	while (current)
@@ -43,7 +50,7 @@ static void _getStyleProperties(const Styles *styles, char **color, char **fonts
 		case PROPERTY_COLOR:
 			if (overrideColor || !*colorModified)
 			{
-				*color = current->rule;
+				p->color = current->rule;
 				overrideColor = true;
 			}
 			*colorModified = true;
@@ -51,7 +58,7 @@ static void _getStyleProperties(const Styles *styles, char **color, char **fonts
 		case PROPERTY_SIZE:
 			if (overrideFontsize || !*fontsizeModified)
 			{
-				*fontsize = current->rule;
+				p->fontsize = current->rule;
 				overrideFontsize = true;
 			}
 			*fontsizeModified = true;
@@ -59,7 +66,7 @@ static void _getStyleProperties(const Styles *styles, char **color, char **fonts
 		case PROPERTY_BORDER:
 			if (overrideStyle || !*styleModified)
 			{
-				*style = current->rule;
+				p->style = current->rule;
 				overrideStyle = true;
 			}
 			*styleModified = true;
@@ -67,46 +74,56 @@ static void _getStyleProperties(const Styles *styles, char **color, char **fonts
 		case PROPERTY_VARIABLE:
 			const StyleVariable *variable = getStyleVariableByReference(current->rule);
 			if (variable)
-				_getStyleProperties(variable->styles, color, fontsize, style, colorModified, fontsizeModified, styleModified, overrideColor, overrideFontsize, overrideStyle);
+				_getStyleProperties(variable->styles, p, colorModified, fontsizeModified, styleModified, overrideColor, overrideFontsize, overrideStyle);
 		}
 
 		current = current->next;
 	}
 }
 
-static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int *n, bool big_brother)
+static properties _getProperties(const Structure *structure, const Cells *cell)
 {
-	const unsigned int id = *n;
-	(*n)++;
-	char *color = "black";
-	char *fontsize = "11";
-	char *style = "solid";
+	properties p = {
+		.color = "black",
+		.fontsize = "11",
+		.style = "solid",
+	};
 
 	bool colorModified = false;
 	bool fontsizeModified = false;
 	bool styleModified = false;
 
-	AnnotationList *annotationList = tree->annotations;
+	AnnotationList *annotationList = structure->annotations;
 	while (annotationList)
 	{
 		if (!annotationList->value->target)
 		{
-			_getDefaultProperties(annotationList->value->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified);
+			_getDefaultProperties(annotationList->value->style, &p, &colorModified, &fontsizeModified, &styleModified);
 		}
-		else if (treeCell->label)
+		else if (cell->label)
 		{
 			Annotation *annotation = annotationList->value;
 
-			if (strcmp(annotation->target, treeCell->label) == 0)
+			if (strcmp(annotation->target, cell->label) == 0)
 			{
-				_getCustomProperties(annotation->style, &color, &fontsize, &style, &colorModified, &fontsizeModified, &styleModified);
+				_getCustomProperties(annotation->style, &p, &colorModified, &fontsizeModified, &styleModified);
 			}
 		}
 
 		annotationList = annotationList->next;
 	}
 
-	_output(1, "node%d [label=\"%s\" color=%s fontsize=%s style=%s]\n", id, treeCell->value->value, color, fontsize, style);
+	return p;
+}
+
+static void _generateTreeNodes(Structure *tree, Cells *treeCell, unsigned int *n, bool big_brother)
+{
+	const unsigned int id = *n;
+	(*n)++;
+
+	properties p = _getProperties(tree, treeCell);
+
+	_output(1, "node%d [label=\"%s\" color=%s fontsize=%s style=%s]\n", id, treeCell->value->value, p.color, p.fontsize, p.style);
 
 	if (!big_brother)
 	{
