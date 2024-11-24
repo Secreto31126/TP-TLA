@@ -1,4 +1,4 @@
-$style: border(double) color(red);
+$style: border(solid) color(red);
 Array:[
     "elemento"
 ];

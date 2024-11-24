@@ -1,4 +1,4 @@
-$kebab-case: border(double);
+$kebab-case: border(solid);
 
 @Customize(A, $kebab-case)
 Array:[

@@ -1,4 +1,4 @@
-@Customize(A, B, C, border(double))
+@Customize(A, B, C, border(solid))
 Array:[
     A:"elemento",
     B:"otro elemento",
